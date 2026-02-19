@@ -1,0 +1,14 @@
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/AccessNotAllowedException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/BadRequestException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/BaseException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/DataExportRequestException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/ErrorOccurredException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/ItemAlreadyExistException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/ItemNotFoundException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/MfaException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/RedirectToPathException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/RetryableException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/SignatureNotVerifiedException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/SubscriptionLimitReachedException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/exceptions/UnAuthorizedException.java
+/Volumes/Projects/repsy-project/repsy-mono/core/core-error-handling/src/main/java/io/repsy/core/error_handling/utils/ErrorUtils.java

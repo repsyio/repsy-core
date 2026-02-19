@@ -1,0 +1,15 @@
+io/repsy/core/events/EmailOtpRequestedEvent.class
+io/repsy/core/events/GdprRequestedEvent.class
+io/repsy/core/events/RegistrationCompletedEvent$RegistrationCompletedEventBuilder.class
+io/repsy/core/events/EmailVerificationRequestedEvent.class
+io/repsy/core/events/UsernameUpdatedEvent.class
+io/repsy/core/events/ContactRequestReceivedEvent.class
+io/repsy/core/events/TenantDeleteRequestedEvent.class
+io/repsy/core/events/ClearStorageTrashRequestedEvent.class
+io/repsy/core/events/PasswordUpdatedEvent.class
+io/repsy/core/events/UserLoginEvent.class
+io/repsy/core/events/MailjetUnsubRequestedEvent.class
+io/repsy/core/events/PasswordRecoveryRequestedEvent.class
+io/repsy/core/events/RegistrationCompletedEvent.class
+io/repsy/core/events/UserCreatedEvent.class
+io/repsy/core/events/ContactRequestReceivedEvent$ContactRequestReceivedEventBuilder.class

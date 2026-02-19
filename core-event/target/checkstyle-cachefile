@@ -1,0 +1,15 @@
+#Thu Feb 19 16:16:47 GMT+03:00 2026
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/ClearStorageTrashRequestedEvent.java=1766398253625
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/ContactRequestReceivedEvent.java=1770892144930
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/EmailOtpRequestedEvent.java=1770892144930
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/EmailVerificationRequestedEvent.java=1770892144930
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/GdprRequestedEvent.java=1770892144930
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/MailjetUnsubRequestedEvent.java=1766398253626
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/PasswordRecoveryRequestedEvent.java=1770892144930
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/PasswordUpdatedEvent.java=1770892144931
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/RegistrationCompletedEvent.java=1770892144931
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/TenantDeleteRequestedEvent.java=1770892144931
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/UserCreatedEvent.java=1770892144931
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/UserLoginEvent.java=1770892144931
+/Volumes/Projects/repsy-project/repsy-mono/core/core-event/src/main/java/io/repsy/core/events/UsernameUpdatedEvent.java=1770892144931
+configuration*?=71D855A8A42F9EBAAF898A97FC739BD0AEDC9BF1

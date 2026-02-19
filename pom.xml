@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.repsy.core</groupId>
+    <artifactId>core-parent</artifactId>
+    <version>1.0.0</version>
+    <relativePath>core-parent/pom.xml</relativePath>
+  </parent>
+
+  <groupId>io.repsy</groupId>
+  <artifactId>core</artifactId>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>core-parent</module>
+    <module>core-event</module>
+    <module>core-error-handling</module>
+    <module>core-response</module>
+    <module>core-ulid</module>
+    <module>core-uuidv7</module>
+  </modules>
+</project>
