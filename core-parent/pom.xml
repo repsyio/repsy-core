@@ -16,7 +16,8 @@
     <maven.compiler.target>25</maven.compiler.target>
     <maven.min.version>3.9.7</maven.min.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <checkstyle.config.location>../config/checkstyle.xml</checkstyle.config.location>
+    <checkstyle.config.location>${maven.multiModuleProjectDirectory}/config/checkstyle.xml</checkstyle.config.location>
+    <!-- Dependency Versions -->
     <awspring-s3.version>3.4.2</awspring-s3.version>
     <bouncycastle.version>1.83</bouncycastle.version>
     <dnsjava.version>3.6.4</dnsjava.version>
