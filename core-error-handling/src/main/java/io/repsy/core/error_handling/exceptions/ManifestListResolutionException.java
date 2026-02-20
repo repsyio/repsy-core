@@ -1,11 +1,14 @@
 package io.repsy.core.error_handling.exceptions;
 
+import org.jspecify.annotations.NonNull;
+
 public class ManifestListResolutionException extends BaseException {
-  public ManifestListResolutionException(String message) {
+  public ManifestListResolutionException(final @NonNull String message) {
     super(message);
   }
 
-  public ManifestListResolutionException(String message, Throwable cause) {
+  public ManifestListResolutionException(
+      final @NonNull String message, final @NonNull Throwable cause) {
     super(message, cause);
   }
 }
