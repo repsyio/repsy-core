@@ -157,7 +157,7 @@
         <configuration>
           <failsOnError>true</failsOnError>
           <consoleOutput>true</consoleOutput>
-          <configLocation>${maven.multiModuleProjectDirectory}/config/checkstyle.xml</configLocation>
+          <configLocation>../../config/checkstyle.xml</configLocation>
           <configLocation>${checkstyle.config.location}</configLocation>
           <includeTestSourceDirectory>false</includeTestSourceDirectory>
           <excludes>**/module-info.java</excludes>
