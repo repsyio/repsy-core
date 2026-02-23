@@ -41,8 +41,9 @@
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
-          <arguments>-DskipTests -Dcheckstyle.skip=true -Dfmt.skip=true -Dmaven.test.skip=true</arguments>
-          <preparationGoals>clean fmt:format compile -DskipTests -Dmaven.test.skip=true</preparationGoals>
+          <arguments>-DskipTests -Dmaven.test.skip=true -Dcheckstyle.skip=true -Dfmt.skip=true</arguments>
+          <preparationGoals>clean compile</preparationGoals>
+          <completionGoals>clean</completionGoals>
         </configuration>
       </plugin>
     </plugins>
