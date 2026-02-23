@@ -37,12 +37,16 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>3.3.1</version>
         <configuration>
-          <tagNameFormat>v@{core.version}</tagNameFormat>
+          <lineSeparator>\n</lineSeparator>
+
+          <tagNameFormat>v@{project.version}</tagNameFormat>
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
-          <useEditMode>true</useEditMode>
-          <arguments>-DskipTests -Dmaven.test.skip=true -Dcheckstyle.skip=true -Dfmt.skip=true</arguments>
+
+          <preparationGoals>clean verify</preparationGoals>
+
+          <arguments>-DskipTests -Dmaven.test.skip=true -Dcheckstyle.skip=true</arguments>
         </configuration>
       </plugin>
     </plugins>
