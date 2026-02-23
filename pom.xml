@@ -41,9 +41,9 @@
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
+          <useEditMode>true</useEditMode>
           <arguments>-DskipTests -Dmaven.test.skip=true -Dcheckstyle.skip=true -Dfmt.skip=true</arguments>
           <preparationGoals>clean compile</preparationGoals>
-          <completionGoals>clean</completionGoals>
         </configuration>
       </plugin>
     </plugins>
