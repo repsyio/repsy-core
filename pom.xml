@@ -17,6 +17,10 @@
   <packaging>pom</packaging>
   <version>1.0.1-SNAPSHOT</version>
 
+  <properties>
+    <core.version>1.0.1-SNAPSHOT</core.version>
+  </properties>
+
   <modules>
     <module>core-parent</module>
     <module>core-event</module>
