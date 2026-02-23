@@ -33,6 +33,7 @@
     <mapstruct.version>1.6.3</mapstruct.version>
     <maven.version>3.9.12</maven.version>
     <repsy.version>1.0.0</repsy.version>
+    <revision>1.0.0-SNAPSHOT</revision>
     <semver4j.version>3.1.0</semver4j.version>
     <spring-boot.version>4.0.2</spring-boot.version>
     <spring-cloud.version>2025.1.0</spring-cloud.version>
@@ -50,6 +51,12 @@
     <error-prone.version>2.45.0</error-prone.version>
     <spotbugs.version>4.9.8</spotbugs.version>
   </properties>
+
+  <scm>
+    <connection>scm:git:https://github.com/repsyio/repsy-mono.git</connection>
+    <developerConnection>scm:git:https://github.com/repsyio/repsy-mono.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 
   <dependencyManagement>
     <dependencies>
@@ -214,6 +221,20 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+          <tagNameFormat>v@{project.version}</tagNameFormat>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <pushChanges>false</pushChanges>
+          <localCheckout>true</localCheckout>
+          <preparationGoals>clean verify</preparationGoals>
+          <arguments>-DskipTests -Dmaven.test.skip=true -Dcheckstyle.skip=true</arguments>
+        </configuration>
       </plugin>
     </plugins>
   </build>
