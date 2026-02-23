@@ -18,6 +18,7 @@
     <!-- Dependency Versions -->
     <awspring-s3.version>3.4.2</awspring-s3.version>
     <bouncycastle.version>1.83</bouncycastle.version>
+    <maven.release.skip>true</maven.release.skip>
     <dnsjava.version>3.6.4</dnsjava.version>
     <guava.version>33.5.0-jre</guava.version>
     <gson.version>2.13.2</gson.version>
