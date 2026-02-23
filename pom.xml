@@ -10,7 +10,6 @@
     <relativePath>core-parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>io.repsy</groupId>
   <artifactId>core</artifactId>
   <version>1.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
