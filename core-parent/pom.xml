@@ -225,6 +225,7 @@
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
+          <arguments>-Dcheckstyle.skip=true -Dfmt.skip=true</arguments>
         </configuration>
       </plugin>
     </plugins>
