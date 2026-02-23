@@ -26,7 +26,6 @@
   </scm>
 
   <modules>
-    <module>core-parent</module>
     <module>core-event</module>
     <module>core-error-handling</module>
     <module>core-response</module>
