@@ -15,6 +15,10 @@
   <version>1.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <properties>
+    <core.version.format>1.0.0-SNAPSHOT</core.version.format>
+  </properties>
+
   <scm>
     <connection>scm:git:https://github.com/repsyio/repsy-core.git</connection>
     <developerConnection>scm:git:https://github.com/repsyio/repsy-core.git</developerConnection>
@@ -37,7 +41,7 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>3.3.1</version>
         <configuration>
-          <tagNameFormat>v@{project.version}</tagNameFormat>
+          <tagNameFormat>v@${core.version.format}</tagNameFormat>
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
