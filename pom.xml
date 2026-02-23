@@ -41,8 +41,7 @@
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
-          <arguments>-DskipTests -Dcheckstyle.skip=true</arguments>
-          <preparationGoals>clean verify fmt:format</preparationGoals>
+          <preparationGoals>clean verify fmt:format -DskipTests -Dcheckstyle.skip=true</preparationGoals>
         </configuration>
       </plugin>
     </plugins>
