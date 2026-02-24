@@ -6,17 +6,12 @@
   <parent>
     <groupId>io.repsy.core</groupId>
     <artifactId>core-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <relativePath>core-parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>core</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
-
-  <properties>
-    <core.version.format>1.0.0-SNAPSHOT</core.version.format>
-  </properties>
 
   <scm>
     <connection>scm:git:https://github.com/repsyio/repsy-core.git</connection>
@@ -26,6 +21,7 @@
 
   <modules>
     <module>core-event</module>
+    <module>core-parent</module>
     <module>core-error-handling</module>
     <module>core-response</module>
     <module>core-ulid</module>
@@ -39,7 +35,7 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>3.3.1</version>
         <configuration>
-          <tagNameFormat>v@${core.version.format}</tagNameFormat>
+          <tagNameFormat>v@${project.version}</tagNameFormat>
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
