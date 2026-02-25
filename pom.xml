@@ -38,7 +38,7 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>3.3.1</version>
         <configuration>
-          <tagNameFormat>v@${project.version}</tagNameFormat>
+          <tagNameFormat>v@{project.version}</tagNameFormat>
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
