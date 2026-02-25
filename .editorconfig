@@ -13,3 +13,7 @@ end_of_line = crlf
 
 [{*.xml,*.yml,*.yaml,*.java,*.css,*.html,*.js,*.json,*.ts}]
 indent_size = 2
+
+[pom.xml]
+indent_size = unset
+indent_style = unset
