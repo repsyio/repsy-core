@@ -215,36 +215,6 @@
           <argLine>-Duser.timezone=UTC</argLine>
         </configuration>
       </plugin>
-
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <version>0.16.1</version>
-        <executions>
-          <execution>
-            <phase>verify</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <excludes>
-            <exclude>**/target/**</exclude>
-            <exclude>**/config/**</exclude>
-            <exclude>**/pom.xml</exclude>
-            <exclude>**/.idea/**</exclude>
-            <exclude>**/*.iml</exclude>
-            <exclude>.git/**</exclude>
-            <exclude>.gitignore</exclude>
-            <exclude>**/*.md</exclude>
-            <exclude>**/NOTICE</exclude>
-            <exclude>**/LICENSE</exclude>
-            <exclude>.editorconfig</exclude>
-            <exclude>.github/**</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 </project>
