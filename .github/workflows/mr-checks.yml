@@ -11,7 +11,7 @@ on:
 jobs:
   pre-checks:
     name: Editorconfig check - All
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
@@ -31,7 +31,7 @@ jobs:
 
   java-checks:
     name: Java Core Lib check
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
