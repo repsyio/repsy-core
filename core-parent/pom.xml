@@ -14,7 +14,7 @@
     <maven.compiler.target>25</maven.compiler.target>
     <maven.min.version>3.9.7</maven.min.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <checkstyle.config.location>../../config/checkstyle.xml</checkstyle.config.location>
+    <checkstyle.config.location>../config/checkstyle.xml</checkstyle.config.location>
     <!-- Dependency Versions -->
     <awspring-s3.version>3.4.2</awspring-s3.version>
     <bouncycastle.version>1.83</bouncycastle.version>
@@ -211,6 +211,39 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Duser.timezone=UTC</argLine>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>0.16.1</version>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <excludes>
+            <exclude>**/target/**</exclude>
+            <exclude>**/config/**</exclude>
+            <exclude>**/pom.xml</exclude>
+            <exclude>**/.idea/**</exclude>
+            <exclude>**/*.iml</exclude>
+            <exclude>.git/**</exclude>
+            <exclude>.gitignore</exclude>
+            <exclude>**/*.md</exclude>
+            <exclude>**/NOTICE</exclude>
+            <exclude>**/LICENSE</exclude>
+            <exclude>.editorconfig</exclude>
+            <exclude>.github/**</exclude>
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>
