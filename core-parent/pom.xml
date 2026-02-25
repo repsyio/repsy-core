@@ -215,6 +215,71 @@
           <argLine>-Duser.timezone=UTC</argLine>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>0.16.1</version>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <excludes>
+            <!-- Build & IDE -->
+            <exclude>**/target/**</exclude>
+            <exclude>**/.mvn/**</exclude>
+            <exclude>**/.idea/**</exclude>
+            <exclude>**/*.iml</exclude>
+
+            <!-- Git -->
+            <exclude>.git/**</exclude>
+            <exclude>.github/**</exclude>
+            <exclude>.gitignore</exclude>
+            <exclude>**/*.gitmodules</exclude>
+
+            <!-- Config & Project files -->
+            <exclude>**/config/**</exclude>
+            <exclude>pom.xml</exclude>
+            <exclude>**/pom.xml</exclude>
+            <exclude>**/*.yml</exclude>
+            <exclude>**/*.yaml</exclude>
+            <exclude>**/*.json</exclude>
+            <exclude>**/*.properties</exclude>
+            <exclude>**/*.config</exclude>
+
+            <!-- Frontend -->
+            <exclude>**/*.ts</exclude>
+            <exclude>**/*.html</exclude>
+            <exclude>**/*.css</exclude>
+            <exclude>**/*.js</exclude>
+
+            <!-- Assets -->
+            <exclude>**/*.svg</exclude>
+            <exclude>**/*.png</exclude>
+            <exclude>**/*.jpg</exclude>
+
+            <!-- DB & Templates -->
+            <exclude>**/*.sql</exclude>
+            <exclude>**/*.ftl</exclude>
+
+            <!-- Docs -->
+            <exclude>**/*.md</exclude>
+            <exclude>**/*.txt</exclude>
+            <exclude>**/sitemap.xml</exclude>
+            <exclude>**/NOTICE</exclude>
+            <exclude>**/LICENSE</exclude>
+
+            <!-- Editor config -->
+            <exclude>**/*.prettierrc</exclude>
+            <exclude>**/.editorconfig</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
