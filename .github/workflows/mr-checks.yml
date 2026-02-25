@@ -46,7 +46,7 @@ jobs:
           cache: maven
 
       - name: License Header Check
-        run: mvn -B -ntp apache-rat:check
+        run: mvn -B -ntp org.apache.rat:apache-rat-plugin:check
 
       - name: Build and Verify
         run: mvn -B -ntp verify
