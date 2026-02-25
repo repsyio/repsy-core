@@ -1,4 +1,5 @@
 name: MR Checks
+
 permissions:
   contents: read
 
