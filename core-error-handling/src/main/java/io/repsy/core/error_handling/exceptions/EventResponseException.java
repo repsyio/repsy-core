@@ -15,10 +15,11 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class EventResponseException extends BaseException {
-  public EventResponseException(final @NonNull String message, final @NonNull Exception ex) {
+  public EventResponseException(final String message, final Exception ex) {
     super(message, ex);
   }
 }

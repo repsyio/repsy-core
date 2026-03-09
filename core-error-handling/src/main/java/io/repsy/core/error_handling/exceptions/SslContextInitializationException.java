@@ -15,11 +15,11 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SslContextInitializationException extends BaseException {
-  public SslContextInitializationException(
-      final @NonNull String message, final @NonNull Exception ex) {
+  public SslContextInitializationException(final String message, final Exception ex) {
     super(message, ex);
   }
 }
