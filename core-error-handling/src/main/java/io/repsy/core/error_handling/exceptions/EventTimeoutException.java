@@ -15,10 +15,11 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class EventTimeoutException extends RuntimeException {
-  public EventTimeoutException(final @NonNull String message) {
+  public EventTimeoutException(final String message) {
     super(message);
   }
 }

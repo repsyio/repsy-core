@@ -18,8 +18,8 @@ package io.repsy.core.error_handling.exceptions;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public class SslContextInitializationException extends BaseException {
-  public SslContextInitializationException(final String message, final Exception ex) {
-    super(message, ex);
+public class JsonParseException extends BaseException {
+  public JsonParseException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 }
