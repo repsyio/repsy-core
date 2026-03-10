@@ -18,7 +18,6 @@ package io.repsy.core.error_handling.utils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jspecify.annotations.NonNull;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 @UtilityClass
 public class ErrorUtils {
 
+  private static final @NonNull String ERROR_CODE_PREFIX = "Error Code: ";
   private static final @NonNull String STACK_TRACE_SEPARATOR =
       "Stack Trace ---------------------------------------\n";
 
@@ -39,7 +39,7 @@ public class ErrorUtils {
 
     return requestToString(request)
         + STACK_TRACE_SEPARATOR
-        + "Error Code: "
+        + ERROR_CODE_PREFIX
         + UUID.randomUUID()
         + "\n"
         + ExceptionUtils.getStackTrace(ex);
@@ -50,7 +50,7 @@ public class ErrorUtils {
 
     return requestToString(request)
         + STACK_TRACE_SEPARATOR
-        + "Error Code: "
+        + ERROR_CODE_PREFIX
         + UUID.randomUUID()
         + "\n"
         + "Source Type: "
@@ -71,7 +71,7 @@ public class ErrorUtils {
 
     return requestToString(request)
         + STACK_TRACE_SEPARATOR
-        + "Error Code: "
+        + ERROR_CODE_PREFIX
         + UUID.randomUUID()
         + "\n"
         + "Method: "
@@ -144,7 +144,7 @@ public class ErrorUtils {
           .append(
               Collections.list(request.getParameterNames()).stream()
                   .map(pn -> pn + ":" + request.getParameter(pn))
-                  .collect(Collectors.toList()))
+                  .toList())
           .append("\n");
     }
 
@@ -168,7 +168,7 @@ public class ErrorUtils {
               .toString();
 
       errorMessage.append("Content -------------------------------------------\n").append(content);
-    } catch (final Exception e) {
+    } catch (final Exception _) {
       // pass
     }
 
