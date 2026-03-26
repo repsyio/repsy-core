@@ -31,7 +31,7 @@
     <mapstruct.version>1.6.3</mapstruct.version>
     <maven.version>3.9.12</maven.version>
     <semver4j.version>3.1.0</semver4j.version>
-    <spring-boot.version>4.0.2</spring-boot.version>
+    <spring-boot.version>4.0.5</spring-boot.version>
     <spring-cloud.version>2025.1.0</spring-cloud.version>
     <spring-modulith.version>2.0.2</spring-modulith.version>
     <stripe.version>31.2.0</stripe.version>
