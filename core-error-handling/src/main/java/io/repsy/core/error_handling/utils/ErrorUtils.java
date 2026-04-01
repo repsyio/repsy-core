@@ -15,6 +15,8 @@
  */
 package io.repsy.core.error_handling.utils;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.UUID;
@@ -156,7 +158,11 @@ public class ErrorUtils {
       final var headerName = headerNames.nextElement();
       final var headerContent = request.getHeader(headerName);
 
-      errorMessage.append(headerName).append(": ").append(headerContent).append("\n");
+      if (headerName.equals(AUTHORIZATION)) {
+        errorMessage.append(headerName).append(": ").append("*************").append("\n");
+      } else {
+        errorMessage.append(headerName).append(": ").append(headerContent).append("\n");
+      }
     }
 
     try {
