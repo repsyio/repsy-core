@@ -138,16 +138,19 @@ public class ErrorUtils {
         .append("\n");
 
     if (request.getQueryString() != null) {
-      errorMessage
-          .append("Query String: ")
-          .append(request.getQueryString())
-          .append("\n")
-          .append("Parameters: ")
-          .append(
-              Collections.list(request.getParameterNames()).stream()
-                  .map(pn -> pn + ":" + request.getParameter(pn))
-                  .toList())
-          .append("\n");
+      errorMessage.append("Query String: ").append(request.getQueryString()).append("\n");
+
+      try {
+        errorMessage
+            .append("Parameters: ")
+            .append(
+                Collections.list(request.getParameterNames()).stream()
+                    .map(pn -> pn + ":" + request.getParameter(pn))
+                    .toList())
+            .append("\n");
+      } catch (final Exception _) {
+        errorMessage.append("Parameters: unavailable (malformed query string)\n");
+      }
     }
 
     errorMessage.append("Headers -------------------------------------------\n");
