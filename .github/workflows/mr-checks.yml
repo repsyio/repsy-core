@@ -13,7 +13,7 @@ jobs:
     name: Editorconfig check - All
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: There must be only one .editorconfig file
         run: |
@@ -33,7 +33,7 @@ jobs:
     name: Java Core Lib check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Setup Maven Action
         uses: s4u/setup-maven-action@v1.19.0
