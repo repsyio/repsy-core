@@ -256,6 +256,7 @@
             <exclude>**/*.html</exclude>
             <exclude>**/*.css</exclude>
             <exclude>**/*.js</exclude>
+            <exclude>**/*.lock</exclude>
 
             <!-- Assets -->
             <exclude>**/*.svg</exclude>
