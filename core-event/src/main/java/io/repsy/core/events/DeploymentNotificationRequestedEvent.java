@@ -15,17 +15,14 @@
  */
 package io.repsy.core.events;
 
-import java.util.UUID;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
-// scanEligible is computed once, synchronously, at publish time so that every listener acts on
-// the same snapshot instead of each independently re-deriving it later and possibly disagreeing.
-public record ArtifactPushedEvent(
-    @NonNull UUID repoId,
-    @NonNull String repoType,
+public record DeploymentNotificationRequestedEvent(
+    long tenantId,
+    @NonNull String email,
+    @NonNull String username,
     @NonNull String repoName,
-    @NonNull String storagePath,
-    @Nullable String artifactName,
-    @Nullable String artifactVersion,
-    boolean scanEligible) {}
+    @NonNull String artifactName,
+    @NonNull String artifactVersion,
+    @NonNull String repoType,
+    @NonNull String viewUrl) {}
