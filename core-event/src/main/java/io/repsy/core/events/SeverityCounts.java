@@ -17,14 +17,10 @@ package io.repsy.core.events;
 
 import org.jspecify.annotations.NonNull;
 
-public record ScanResultNotificationRequestedEvent(
-    long tenantId,
-    @NonNull String email,
-    @NonNull String username,
-    @NonNull String repoName,
-    @NonNull String artifactName,
-    @NonNull String artifactVersion,
-    @NonNull String scanStatus,
-    @NonNull String severitySummary,
-    @NonNull SeverityCounts severityCounts,
-    @NonNull String viewUrl) {}
+// Counts are plain integer strings ("0".."N") so mail templates can badge-check with != "0".
+public record SeverityCounts(
+    @NonNull String critical,
+    @NonNull String high,
+    @NonNull String medium,
+    @NonNull String low,
+    @NonNull String unknown) {}

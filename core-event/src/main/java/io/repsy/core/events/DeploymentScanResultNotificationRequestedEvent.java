@@ -27,4 +27,5 @@ public record DeploymentScanResultNotificationRequestedEvent(
     @NonNull String repoType,
     @NonNull String scanStatus,
     @NonNull String severitySummary,
+    @NonNull SeverityCounts severityCounts,
     @NonNull String viewUrl) {}
