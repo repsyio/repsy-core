@@ -15,15 +15,15 @@
  */
 package io.repsy.core.events;
 
-import java.util.UUID;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
-public record ArtifactPushedEvent(
-    @NonNull UUID repoId,
-    @NonNull String repoType,
+public record ScanResultNotificationRequestedEvent(
+    long tenantId,
+    @NonNull String email,
+    @NonNull String username,
     @NonNull String repoName,
-    @NonNull String storagePath,
-    @Nullable String artifactName,
-    @Nullable String artifactVersion,
-    boolean scanEligible) {}
+    @NonNull String artifactName,
+    @NonNull String artifactVersion,
+    @NonNull String scanStatus,
+    @NonNull String severitySummary,
+    @NonNull String viewUrl) {}
