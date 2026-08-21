@@ -19,8 +19,6 @@ import java.util.UUID;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-// scanEligible is computed once, synchronously, at publish time so that every listener acts on
-// the same snapshot instead of each independently re-deriving it later and possibly disagreeing.
 public record ArtifactPushedEvent(
     @NonNull UUID repoId,
     @NonNull String repoType,
