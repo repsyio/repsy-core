@@ -26,4 +26,5 @@ public record ArtifactPushedEvent(
     @NonNull String storagePath,
     @Nullable String artifactName,
     @Nullable String artifactVersion,
-    boolean scanEligible) {}
+    boolean scanEligible,
+    boolean systemInitiated) {}
