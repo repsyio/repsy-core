@@ -205,8 +205,7 @@ public class ErrorUtils {
             .matcher(message)
             .replaceAll("\"$1\":\"" + REDACTED_VALUE + "\"");
     redacted = SENSITIVE_FORM_FIELD_PATTERN.matcher(redacted).replaceAll("$1=" + REDACTED_VALUE);
-    redacted =
-        SENSITIVE_COLON_FIELD_PATTERN.matcher(redacted).replaceAll("$1:" + REDACTED_VALUE);
+    redacted = SENSITIVE_COLON_FIELD_PATTERN.matcher(redacted).replaceAll("$1:" + REDACTED_VALUE);
 
     return redacted;
   }
