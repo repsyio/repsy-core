@@ -20,6 +20,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jspecify.annotations.NonNull;
@@ -35,6 +36,19 @@ public class ErrorUtils {
   private static final @NonNull String ERROR_CODE_PREFIX = "Error Code: ";
   private static final @NonNull String STACK_TRACE_SEPARATOR =
       "Stack Trace ---------------------------------------\n";
+
+  private static final @NonNull String REDACTED_VALUE = "***REDACTED***";
+  private static final @NonNull String SENSITIVE_FIELD_NAME =
+      "[a-zA-Z0-9_]*(?:password|pwd|hash|salt|secret|token|apikey|api_key|credential)"
+          + "[a-zA-Z0-9_]*";
+  private static final @NonNull Pattern SENSITIVE_JSON_FIELD_PATTERN =
+      Pattern.compile(
+          "\"(" + SENSITIVE_FIELD_NAME + ")\"\\s*:\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+  private static final @NonNull Pattern SENSITIVE_FORM_FIELD_PATTERN =
+      Pattern.compile("\\b(" + SENSITIVE_FIELD_NAME + ")=[^&\\s]*", Pattern.CASE_INSENSITIVE);
+  private static final @NonNull Pattern SENSITIVE_COLON_FIELD_PATTERN =
+      Pattern.compile(
+          "\\b(" + SENSITIVE_FIELD_NAME + ")\\s*:\\s*[^,\\]\\n]*", Pattern.CASE_INSENSITIVE);
 
   public static @NonNull String exceptionToString(
       final @NonNull Throwable ex, final @NonNull HttpServletRequest request) {
@@ -181,6 +195,19 @@ public class ErrorUtils {
       // pass
     }
 
-    return errorMessage.toString();
+    return redactSensitiveFields(errorMessage.toString());
+  }
+
+  private static @NonNull String redactSensitiveFields(final @NonNull String message) {
+
+    var redacted =
+        SENSITIVE_JSON_FIELD_PATTERN
+            .matcher(message)
+            .replaceAll("\"$1\":\"" + REDACTED_VALUE + "\"");
+    redacted = SENSITIVE_FORM_FIELD_PATTERN.matcher(redacted).replaceAll("$1=" + REDACTED_VALUE);
+    redacted =
+        SENSITIVE_COLON_FIELD_PATTERN.matcher(redacted).replaceAll("$1:" + REDACTED_VALUE);
+
+    return redacted;
   }
 }
