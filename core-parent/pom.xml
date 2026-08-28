@@ -33,7 +33,7 @@
     <semver4j.version>3.1.0</semver4j.version>
     <spring-boot.version>4.1.0</spring-boot.version>
     <spring-cloud.version>2025.1.0</spring-cloud.version>
-    <spring-modulith.version>2.0.2</spring-modulith.version>
+    <spring-modulith.version>2.1.0</spring-modulith.version>
     <stripe.version>31.2.0</stripe.version>
     <totp.version>1.7.1</totp.version>
     <ulid-creator.version>5.2.3</ulid-creator.version>
