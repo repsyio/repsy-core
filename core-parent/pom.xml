@@ -41,7 +41,7 @@
     <fmt-maven-plugin.version>2.29</fmt-maven-plugin.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
     <maven-jxr-plugin.version>3.6.0</maven-jxr-plugin.version>
-    <spotbugs-maven-plugin.version>4.10.3.0</spotbugs-maven-plugin.version>
+    <spotbugs-maven-plugin.version>4.10.4.0</spotbugs-maven-plugin.version>
     <!-- Plugin Dependency Versions -->
     <checkstyle.version>13.8.0</checkstyle.version>
     <error-prone.version>2.45.0</error-prone.version>
