@@ -50,3 +50,11 @@ jobs:
 
       - name: Build and Verify
         run: mvn -B -ntp verify
+
+      - name: Upload JaCoCo reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-reports
+          path: '**/target/site/jacoco/**'
+          if-no-files-found: error
