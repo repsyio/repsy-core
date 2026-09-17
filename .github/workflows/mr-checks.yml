@@ -51,6 +51,17 @@ jobs:
       - name: Build and Verify
         run: mvn -B -ntp verify
 
+      - name: Analyze with SonarCloud
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+        run: >-
+          mvn -B -ntp
+          org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          -Dsonar.projectKey=repsyio_repsy-core
+          -Dsonar.organization=repsyio
+          -Dsonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
+
       - name: Upload JaCoCo reports
         if: always()
         uses: actions/upload-artifact@v7
