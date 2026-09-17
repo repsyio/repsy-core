@@ -11,7 +11,7 @@ on:
 jobs:
   pre-checks:
     name: Editorconfig check - All
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v5
 
@@ -31,7 +31,7 @@ jobs:
 
   java-checks:
     name: Java Core Lib check
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v5
 
@@ -50,3 +50,11 @@ jobs:
 
       - name: Build and Verify
         run: mvn -B -ntp verify
+
+      - name: Upload JaCoCo reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-reports
+          path: '**/target/site/jacoco/**'
+          if-no-files-found: error

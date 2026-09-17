@@ -1,0 +1,31 @@
+name: Dependabot Checks
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verify:
+    name: Dependabot Maven Verification
+    if: github.actor == 'dependabot[bot]'
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.20.0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: "25"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Build and Verify
+        run: mvn -B -ntp verify
