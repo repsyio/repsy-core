@@ -286,6 +286,16 @@
           </execution>
         </executions>
         <configuration>
+          <!--
+            RAT 0.18 defaults these counters to a minimum of one. This
+            parent-only module has no scannable files after the exclusions,
+            so an empty result is valid here.
+          -->
+          <counterMins>
+            <counterMin>LICENSE_CATEGORIES:0</counterMin>
+            <counterMin>LICENSE_NAMES:0</counterMin>
+            <counterMin>Standards:0</counterMin>
+          </counterMins>
           <excludes>
             <!-- Build & IDE -->
             <exclude>**/target/**</exclude>
