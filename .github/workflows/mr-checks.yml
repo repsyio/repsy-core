@@ -59,7 +59,7 @@ jobs:
           mvn -B -ntp
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           -Dsonar.projectKey=repsyio_repsy-core
-          -Dsonar.organization=repsyio
+          -Dsonar.organization=repsy
           -Dsonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
 
       - name: Upload JaCoCo reports
