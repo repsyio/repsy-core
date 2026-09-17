@@ -255,6 +255,10 @@
                 <requireMavenVersion>
                   <version>${maven.min.version}</version>
                 </requireMavenVersion>
+                <!-- Java 25 is the current LTS; block accidental non-LTS major upgrades. -->
+                <requireJavaVersion>
+                  <version>[25,26)</version>
+                </requireJavaVersion>
               </rules>
             </configuration>
           </execution>
