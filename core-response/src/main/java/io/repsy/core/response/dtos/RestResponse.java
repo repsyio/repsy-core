@@ -22,7 +22,7 @@ public class RestResponse<T> {
   private final String msgId;
   @Getter private final ResponseType type;
   @Getter private @Nullable T data;
-  @Getter private String errorCode;
+  @Getter private @Nullable String errorCode;
   @Getter private String text;
 
   public RestResponse(final String msgId, final ResponseType type) {
