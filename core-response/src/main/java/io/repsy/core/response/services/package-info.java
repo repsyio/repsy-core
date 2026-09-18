@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.repsy.core.events;
 
-public record EmailVerificationRequestedEvent(String email, String username, String code) {}
+/** Factory for building REST response envelopes. */
+@NullMarked
+package io.repsy.core.response.services;
+
+import org.jspecify.annotations.NullMarked;

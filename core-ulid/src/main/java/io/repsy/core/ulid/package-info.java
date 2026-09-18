@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.repsy.core.events;
 
-public record EmailVerificationRequestedEvent(String email, String username, String code) {}
+/** ULID entity-id generation, conversion, and Hibernate integration. */
+@NullMarked
+package io.repsy.core.ulid;
+
+import org.jspecify.annotations.NullMarked;

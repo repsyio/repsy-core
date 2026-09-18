@@ -15,10 +15,8 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-import org.jspecify.annotations.NonNull;
-
 public class SignatureNotVerifiedException extends BaseException {
-  public SignatureNotVerifiedException(final @NonNull String msgId) {
+  public SignatureNotVerifiedException(final String msgId) {
     super(msgId);
   }
 }

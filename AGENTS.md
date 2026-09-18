@@ -59,9 +59,11 @@ check) but still runs the other checks. Before considering a change done, run a 
 - Format with `fmt-maven-plugin` (Google Java Format) — run `mvn com.spotify.fmt:fmt-maven-plugin:format`
   if `verify` reports formatting violations, rather than hand-formatting.
 - Lombok and MapStruct annotation processors are available in every module via `core-parent`.
-- Use `org.jspecify.annotations.NonNull` / `@Nullable` on public APIs — this is the nullability
-  convention used throughout the existing code (see `core-response`, `core-ulid`,
-  `core-error-handling`).
+- Nullability follows JSpecify's package-level convention: every leaf package has a
+  `package-info.java` annotated `@org.jspecify.annotations.NullMarked`, making all types in that
+  package non-null by default. Only mark exceptions explicitly with `@Nullable`; don't add
+  `@NonNull` — it's redundant under `@NullMarked` (see `core-response`, `core-ulid`,
+  `core-error-handling`). Add a `package-info.java` with `@NullMarked` to any new package.
 - New source files need the Apache 2.0 license header (see any existing file for the exact
   format) — the RAT plugin fails the build otherwise.
 - Follow `config/checkstyle.xml` for style rules; it's enforced at `verify`, not just advisory.

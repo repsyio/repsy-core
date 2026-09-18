@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.repsy.core.events;
 
-public record EmailVerificationRequestedEvent(String email, String username, String code) {}
+/** REST response envelope types returned by Repsy's REST APIs. */
+@NullMarked
+package io.repsy.core.response.dtos;
+
+import org.jspecify.annotations.NullMarked;

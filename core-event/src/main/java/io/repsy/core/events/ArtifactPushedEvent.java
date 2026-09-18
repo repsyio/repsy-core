@@ -16,14 +16,13 @@
 package io.repsy.core.events;
 
 import java.util.UUID;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public record ArtifactPushedEvent(
-    @NonNull UUID repoId,
-    @NonNull String repoType,
-    @NonNull String repoName,
-    @NonNull String storagePath,
+    UUID repoId,
+    String repoType,
+    String repoName,
+    String storagePath,
     @Nullable String artifactName,
     @Nullable String artifactVersion,
     boolean scanEligible,

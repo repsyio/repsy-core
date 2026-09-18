@@ -25,7 +25,6 @@ import java.util.Objects;
 import org.hibernate.HibernateException;
 import org.hibernate.type.descriptor.WrapperOptions;
 import org.hibernate.usertype.EnhancedUserType;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class UlidUserType implements EnhancedUserType<Ulid> {
@@ -37,7 +36,7 @@ public class UlidUserType implements EnhancedUserType<Ulid> {
   }
 
   @Override
-  public @NonNull Class<Ulid> returnedClass() {
+  public Class<Ulid> returnedClass() {
 
     return Ulid.class;
   }
@@ -64,8 +63,7 @@ public class UlidUserType implements EnhancedUserType<Ulid> {
 
   @Override
   public @Nullable Ulid nullSafeGet(
-      final @NonNull ResultSet rs, final int position, final @NonNull WrapperOptions options)
-      throws SQLException {
+      final ResultSet rs, final int position, final WrapperOptions options) throws SQLException {
 
     final var value = rs.getString(position);
 
@@ -74,10 +72,10 @@ public class UlidUserType implements EnhancedUserType<Ulid> {
 
   @Override
   public void nullSafeSet(
-      final @NonNull PreparedStatement st,
+      final PreparedStatement st,
       final @Nullable Ulid value,
       final int index,
-      final @NonNull WrapperOptions options)
+      final WrapperOptions options)
       throws SQLException {
 
     st.setString(index, value != null ? value.toString() : null);

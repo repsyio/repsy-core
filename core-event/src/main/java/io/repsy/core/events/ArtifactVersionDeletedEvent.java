@@ -16,11 +16,6 @@
 package io.repsy.core.events;
 
 import java.util.UUID;
-import org.jspecify.annotations.NonNull;
 
 public record ArtifactVersionDeletedEvent(
-    @NonNull UUID repoId,
-    @NonNull String repoType,
-    @NonNull String repoName,
-    @NonNull String artifactName,
-    @NonNull String artifactVersion) {}
+    UUID repoId, String repoType, String repoName, String artifactName, String artifactVersion) {}

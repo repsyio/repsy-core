@@ -21,17 +21,16 @@ import java.util.EnumSet;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.generator.BeforeExecutionGenerator;
 import org.hibernate.generator.EventType;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class RandomUlidGenerator implements BeforeExecutionGenerator {
 
   @Override
   public Object generate(
-      final @NonNull SharedSessionContractImplementor session,
-      final @NonNull Object entityInstance,
+      final SharedSessionContractImplementor session,
+      final Object entityInstance,
       final @Nullable Object currentValue,
-      final @NonNull EventType eventType) {
+      final EventType eventType) {
 
     if (currentValue instanceof final Ulid ulid) {
       return ulid;
@@ -41,7 +40,7 @@ public class RandomUlidGenerator implements BeforeExecutionGenerator {
   }
 
   @Override
-  public @NonNull EnumSet<EventType> getEventTypes() {
+  public EnumSet<EventType> getEventTypes() {
 
     return EnumSet.of(EventType.INSERT);
   }

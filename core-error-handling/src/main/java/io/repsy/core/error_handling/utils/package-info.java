@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.repsy.core.events;
 
-public record EmailVerificationRequestedEvent(String email, String username, String code) {}
+/** Utilities for turning an exception and its originating HTTP request into a loggable string. */
+@NullMarked
+package io.repsy.core.error_handling.utils;
+
+import org.jspecify.annotations.NullMarked;

@@ -15,7 +15,4 @@
  */
 package io.repsy.core.events;
 
-import org.jspecify.annotations.NullMarked;
-
-@NullMarked
 public record EmailUpdatedEvent<T>(T tenantId, String newEmail) {}

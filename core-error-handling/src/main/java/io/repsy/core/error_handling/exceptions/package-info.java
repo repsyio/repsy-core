@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.repsy.core.events;
 
-public record EmailVerificationRequestedEvent(String email, String username, String code) {}
+/** Runtime exceptions mapping to specific error conditions across Repsy's services. */
+@NullMarked
+package io.repsy.core.error_handling.exceptions;
+
+import org.jspecify.annotations.NullMarked;

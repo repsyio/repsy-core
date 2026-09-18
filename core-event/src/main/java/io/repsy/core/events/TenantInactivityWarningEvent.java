@@ -16,7 +16,6 @@
 package io.repsy.core.events;
 
 import java.time.Instant;
-import org.jspecify.annotations.NonNull;
 
 public record TenantInactivityWarningEvent(
-    @NonNull String email, @NonNull String username, int stage, @NonNull Instant deletionAt) {}
+    String email, String username, int stage, Instant deletionAt) {}
