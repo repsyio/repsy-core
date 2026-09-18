@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   enable-automerge:
-    runs-on: self-hosted
+    runs-on: warp-ubuntu-latest-x64-2x
 
     steps:
       - name: Verify pull request author
