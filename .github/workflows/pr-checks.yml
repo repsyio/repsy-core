@@ -15,7 +15,7 @@ concurrency:
 jobs:
   pre-checks:
     name: Editorconfig check - All
-    runs-on: self-hosted
+    runs-on: warp-ubuntu-latest-x64-2x
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -35,7 +35,7 @@ jobs:
 
   java-checks:
     name: Java Core Lib check
-    runs-on: self-hosted
+    runs-on: warp-ubuntu-latest-x64-2x
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
