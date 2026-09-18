@@ -23,7 +23,7 @@ public class RestResponse<T> {
   @Getter private final ResponseType type;
   @Getter private @Nullable T data;
   @Getter private @Nullable String errorCode;
-  @Getter private String text;
+  @Getter private @Nullable String text;
 
   public RestResponse(final String msgId, final ResponseType type) {
     this.msgId = msgId;
