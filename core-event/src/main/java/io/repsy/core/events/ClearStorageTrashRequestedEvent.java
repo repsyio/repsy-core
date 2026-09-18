@@ -15,4 +15,6 @@
  */
 package io.repsy.core.events;
 
+// Intentionally empty: this event is a payload-less signal, not a data carrier.
+@SuppressWarnings("java:S2094")
 public record ClearStorageTrashRequestedEvent() {}
