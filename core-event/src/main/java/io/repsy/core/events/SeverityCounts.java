@@ -15,12 +15,6 @@
  */
 package io.repsy.core.events;
 
-import org.jspecify.annotations.NonNull;
-
 // Counts are plain integer strings ("0".."N") so mail templates can badge-check with != "0".
 public record SeverityCounts(
-    @NonNull String critical,
-    @NonNull String high,
-    @NonNull String medium,
-    @NonNull String low,
-    @NonNull String unknown) {}
+    String critical, String high, String medium, String low, String unknown) {}

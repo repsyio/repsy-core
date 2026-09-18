@@ -16,17 +16,16 @@
 package io.repsy.core.response.dtos;
 
 import lombok.Getter;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class RestResponse<T> {
-  private final @NonNull String msgId;
-  @Getter private final @NonNull ResponseType type;
+  private final String msgId;
+  @Getter private final ResponseType type;
   @Getter private @Nullable T data;
   @Getter private String errorCode;
   @Getter private String text;
 
-  public RestResponse(final @NonNull String msgId, final @NonNull ResponseType type) {
+  public RestResponse(final String msgId, final ResponseType type) {
     this.msgId = msgId;
     this.type = type;
   }
@@ -35,15 +34,15 @@ public class RestResponse<T> {
     this.data = data;
   }
 
-  public void setErrorCode(final @NonNull String errorCode) {
+  public void setErrorCode(final String errorCode) {
     this.errorCode = errorCode;
   }
 
-  public void setText(final @NonNull String text) {
+  public void setText(final String text) {
     this.text = text;
   }
 
-  public @NonNull String getMsgId() {
+  public String getMsgId() {
     return this.msgId;
   }
 }

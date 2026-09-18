@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/** Shared Spring application events published across Repsy services. */
+@NullMarked
 package io.repsy.core.events;
 
-public record EmailVerificationRequestedEvent(String email, String username, String code) {}
+import org.jspecify.annotations.NullMarked;

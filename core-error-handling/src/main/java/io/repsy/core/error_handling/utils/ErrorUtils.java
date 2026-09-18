@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.UUID;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jspecify.annotations.NonNull;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -32,12 +31,11 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 @UtilityClass
 public class ErrorUtils {
 
-  private static final @NonNull String ERROR_CODE_PREFIX = "Error Code: ";
-  private static final @NonNull String STACK_TRACE_SEPARATOR =
+  private static final String ERROR_CODE_PREFIX = "Error Code: ";
+  private static final String STACK_TRACE_SEPARATOR =
       "Stack Trace ---------------------------------------\n";
 
-  public static @NonNull String exceptionToString(
-      final @NonNull Throwable ex, final @NonNull HttpServletRequest request) {
+  public static String exceptionToString(final Throwable ex, final HttpServletRequest request) {
 
     return requestToString(request)
         + STACK_TRACE_SEPARATOR
@@ -47,8 +45,8 @@ public class ErrorUtils {
         + ExceptionUtils.getStackTrace(ex);
   }
 
-  public static @NonNull String exceptionToString(
-      final @NonNull ConversionFailedException ex, final @NonNull HttpServletRequest request) {
+  public static String exceptionToString(
+      final ConversionFailedException ex, final HttpServletRequest request) {
 
     return requestToString(request)
         + STACK_TRACE_SEPARATOR
@@ -67,9 +65,8 @@ public class ErrorUtils {
         + ExceptionUtils.getStackTrace(ex);
   }
 
-  public static @NonNull String exceptionToString(
-      final @NonNull HttpRequestMethodNotSupportedException ex,
-      final @NonNull HttpServletRequest request) {
+  public static String exceptionToString(
+      final HttpRequestMethodNotSupportedException ex, final HttpServletRequest request) {
 
     return requestToString(request)
         + STACK_TRACE_SEPARATOR
@@ -85,9 +82,8 @@ public class ErrorUtils {
         + ExceptionUtils.getStackTrace(ex);
   }
 
-  public static @NonNull String exceptionToString(
-      final @NonNull MethodArgumentNotValidException ex,
-      final @NonNull HttpServletRequest request) {
+  public static String exceptionToString(
+      final MethodArgumentNotValidException ex, final HttpServletRequest request) {
 
     final var errorMessage = new StringBuilder();
 
@@ -108,9 +104,8 @@ public class ErrorUtils {
     return errorMessage.toString();
   }
 
-  public static @NonNull String exceptionToString(
-      final @NonNull MissingServletRequestParameterException ex,
-      final @NonNull HttpServletRequest request) {
+  public static String exceptionToString(
+      final MissingServletRequestParameterException ex, final HttpServletRequest request) {
 
     return requestToString(request)
         + STACK_TRACE_SEPARATOR
@@ -123,7 +118,7 @@ public class ErrorUtils {
         + ExceptionUtils.getStackTrace(ex);
   }
 
-  private static @NonNull String requestToString(final @NonNull HttpServletRequest request) {
+  private static String requestToString(final HttpServletRequest request) {
 
     final var errorMessage = new StringBuilder();
 

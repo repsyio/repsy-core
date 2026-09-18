@@ -15,17 +15,15 @@
  */
 package io.repsy.core.events;
 
-import org.jspecify.annotations.NonNull;
-
 public record DeploymentScanResultNotificationRequestedEvent(
     long tenantId,
-    @NonNull String email,
-    @NonNull String username,
-    @NonNull String repoName,
-    @NonNull String artifactName,
-    @NonNull String artifactVersion,
-    @NonNull String repoType,
-    @NonNull String scanStatus,
-    @NonNull String severitySummary,
-    @NonNull SeverityCounts severityCounts,
-    @NonNull String viewUrl) {}
+    String email,
+    String username,
+    String repoName,
+    String artifactName,
+    String artifactVersion,
+    String repoType,
+    String scanStatus,
+    String severitySummary,
+    SeverityCounts severityCounts,
+    String viewUrl) {}
