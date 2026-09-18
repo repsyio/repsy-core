@@ -26,7 +26,7 @@ class UlidTest {
   private final Ulid value = Ulid.from("01ARZ3NDEKTSV4RRFFQ69G5FAV");
 
   @Test
-  void userTypeHandlesValuesAndNulls() throws Exception {
+  void userTypeHandlesEqualityAndCopy() {
     final var type = new UlidUserType();
     assertEquals(java.sql.Types.VARCHAR, type.getSqlType());
     assertEquals(Ulid.class, type.returnedClass());
@@ -39,6 +39,11 @@ class UlidTest {
     assertEquals(value, type.deepCopy(value));
     assertNull(type.deepCopy(null));
     assertFalse(type.isMutable());
+  }
+
+  @Test
+  void userTypeHandlesSerialization() {
+    final var type = new UlidUserType();
     assertEquals(value.toString(), type.disassemble(value));
     assertNull(type.disassemble(null));
     assertSame(value, type.assemble(value, null));
@@ -50,15 +55,19 @@ class UlidTest {
     assertNull(type.toString(null));
     assertEquals(value, type.fromStringValue(value.toString()));
     assertNull(type.fromStringValue(null));
+  }
 
+  @Test
+  void userTypeHandlesJdbcInteraction() throws Exception {
+    final var type = new UlidUserType();
     final var rs = org.mockito.Mockito.mock(ResultSet.class);
     org.mockito.Mockito.when(rs.getString(1)).thenReturn(value.toString());
-    assertEquals(value, type.nullSafeGet(rs, 1, null, null));
+    assertEquals(value, type.nullSafeGet(rs, 1, null));
     org.mockito.Mockito.when(rs.getString(1)).thenReturn(null);
-    assertNull(type.nullSafeGet(rs, 1, null, null));
+    assertNull(type.nullSafeGet(rs, 1, null));
     final var statement = org.mockito.Mockito.mock(PreparedStatement.class);
-    type.nullSafeSet(statement, value, 2, null);
-    type.nullSafeSet(statement, null, 3, null);
+    type.nullSafeSet(statement, value, 2, (org.hibernate.type.descriptor.WrapperOptions) null);
+    type.nullSafeSet(statement, null, 3, (org.hibernate.type.descriptor.WrapperOptions) null);
     org.mockito.Mockito.verify(statement).setString(2, value.toString());
     org.mockito.Mockito.verify(statement).setString(3, null);
   }

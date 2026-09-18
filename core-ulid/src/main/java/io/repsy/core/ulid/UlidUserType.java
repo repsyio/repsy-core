@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Objects;
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.type.descriptor.WrapperOptions;
 import org.hibernate.usertype.EnhancedUserType;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -64,10 +64,7 @@ public class UlidUserType implements EnhancedUserType<Ulid> {
 
   @Override
   public @Nullable Ulid nullSafeGet(
-      final @NonNull ResultSet rs,
-      final int position,
-      final @NonNull SharedSessionContractImplementor session,
-      final @Nullable Object owner)
+      final @NonNull ResultSet rs, final int position, final @NonNull WrapperOptions options)
       throws SQLException {
 
     final var value = rs.getString(position);
@@ -80,7 +77,7 @@ public class UlidUserType implements EnhancedUserType<Ulid> {
       final @NonNull PreparedStatement st,
       final @Nullable Ulid value,
       final int index,
-      final @NonNull SharedSessionContractImplementor session)
+      final @NonNull WrapperOptions options)
       throws SQLException {
 
     st.setString(index, value != null ? value.toString() : null);

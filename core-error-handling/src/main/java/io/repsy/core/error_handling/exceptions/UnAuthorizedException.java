@@ -22,7 +22,7 @@ import org.jspecify.annotations.Nullable;
 
 @Getter
 public class UnAuthorizedException extends BaseException {
-  private @Nullable Map<String, String> headers;
+  private final @Nullable Map<String, String> headers;
 
   public UnAuthorizedException(
       final @NonNull String msgId, final @Nullable Map<String, String> headers) {
@@ -31,6 +31,6 @@ public class UnAuthorizedException extends BaseException {
   }
 
   public UnAuthorizedException(final @NonNull String msgId) {
-    super(msgId);
+    this(msgId, null);
   }
 }

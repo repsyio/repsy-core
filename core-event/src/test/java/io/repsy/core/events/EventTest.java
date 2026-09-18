@@ -57,12 +57,13 @@ class EventTest {
         values[index] = valueFor(components[index]);
       }
       final var event = eventClass.getDeclaredConstructors()[0].newInstance(values);
+      final var sameValuesEvent = eventClass.getDeclaredConstructors()[0].newInstance(values);
       for (var index = 0; index < components.length; index++) {
         assertEquals(values[index], components[index].getAccessor().invoke(event));
       }
       assertNotNull(event.toString());
-      assertEquals(event, event);
-      assertEquals(event.hashCode(), event.hashCode());
+      assertEquals(event, sameValuesEvent);
+      assertEquals(event.hashCode(), sameValuesEvent.hashCode());
     }
   }
 
