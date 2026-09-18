@@ -1,4 +1,4 @@
-name: MR Checks
+name: PR Checks
 
 permissions:
   contents: read
