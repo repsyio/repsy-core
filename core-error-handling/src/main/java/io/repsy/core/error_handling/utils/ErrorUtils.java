@@ -37,22 +37,13 @@ public class ErrorUtils {
 
   public static String exceptionToString(final Throwable ex, final HttpServletRequest request) {
 
-    return requestToString(request)
-        + STACK_TRACE_SEPARATOR
-        + ERROR_CODE_PREFIX
-        + UUID.randomUUID()
-        + "\n"
-        + ExceptionUtils.getStackTrace(ex);
+    return requestHeader(request) + ExceptionUtils.getStackTrace(ex);
   }
 
   public static String exceptionToString(
       final ConversionFailedException ex, final HttpServletRequest request) {
 
-    return requestToString(request)
-        + STACK_TRACE_SEPARATOR
-        + ERROR_CODE_PREFIX
-        + UUID.randomUUID()
-        + "\n"
+    return requestHeader(request)
         + "Source Type: "
         + ex.getSourceType()
         + "\n"
@@ -68,11 +59,7 @@ public class ErrorUtils {
   public static String exceptionToString(
       final HttpRequestMethodNotSupportedException ex, final HttpServletRequest request) {
 
-    return requestToString(request)
-        + STACK_TRACE_SEPARATOR
-        + ERROR_CODE_PREFIX
-        + UUID.randomUUID()
-        + "\n"
+    return requestHeader(request)
         + "Method: "
         + ex.getMethod()
         + "\n"
@@ -116,6 +103,15 @@ public class ErrorUtils {
         + ex.getParameterType()
         + "\n"
         + ExceptionUtils.getStackTrace(ex);
+  }
+
+  private static String requestHeader(final HttpServletRequest request) {
+
+    return requestToString(request)
+        + STACK_TRACE_SEPARATOR
+        + ERROR_CODE_PREFIX
+        + UUID.randomUUID()
+        + "\n";
   }
 
   private static String requestToString(final HttpServletRequest request) {
