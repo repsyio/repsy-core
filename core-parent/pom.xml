@@ -34,6 +34,7 @@
     <spring-cloud.version>2025.1.3</spring-cloud.version>
     <spring-modulith.version>2.1.1</spring-modulith.version>
     <stripe.version>31.2.0</stripe.version>
+    <testcontainers-bom.version>2.0.5</testcontainers-bom.version>
     <totp.version>1.7.1</totp.version>
     <ulid-creator.version>5.2.4</ulid-creator.version>
     <!-- Plugin Versions -->
@@ -76,6 +77,14 @@
         <groupId>org.springframework.modulith</groupId>
         <artifactId>spring-modulith-bom</artifactId>
         <version>${spring-modulith.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-bom</artifactId>
+        <version>${testcontainers-bom.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
