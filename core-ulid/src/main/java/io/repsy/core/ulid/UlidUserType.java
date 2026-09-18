@@ -44,15 +44,7 @@ public class UlidUserType implements EnhancedUserType<Ulid> {
   @Override
   public boolean equals(final @Nullable Ulid x, final @Nullable Ulid y) {
 
-    if (Objects.equals(x, y)) {
-      return true;
-    }
-
-    if (x == null || y == null) {
-      return false;
-    }
-
-    return x.equals(y);
+    return Objects.equals(x, y);
   }
 
   @Override
