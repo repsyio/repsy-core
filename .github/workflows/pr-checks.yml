@@ -62,6 +62,8 @@ jobs:
         run: mvn -B -ntp verify
 
       - name: Analyze with SonarCloud
+        # Dependabot-triggered runs don't receive regular repo secrets, so SONAR_TOKEN is empty.
+        if: github.actor != 'dependabot[bot]'
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
