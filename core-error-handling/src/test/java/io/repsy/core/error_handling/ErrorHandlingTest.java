@@ -10,6 +10,7 @@
 package io.repsy.core.error_handling;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -116,6 +117,23 @@ class ErrorHandlingTest {
     assertTrue(
         ErrorUtils.exceptionToString(missing, request).contains("Missing Parameter Name: limit"));
     assertNotNull(ErrorUtils.exceptionToString(new IllegalArgumentException(), request));
+  }
+
+  @Test
+  void errorUtilsMasksAuthorizationHeaderRegardlessOfCase() throws Exception {
+    final var request = mock(HttpServletRequest.class);
+    when(request.getRequestURI()).thenReturn("/api/test");
+    when(request.getMethod()).thenReturn("POST");
+    final var headerNames = new Vector<String>();
+    headerNames.add("authorization");
+    when(request.getHeaderNames()).thenReturn(headerNames.elements());
+    when(request.getHeader("authorization")).thenReturn("secret");
+    when(request.getReader()).thenReturn(new BufferedReader(new StringReader("")));
+
+    final var result = ErrorUtils.exceptionToString(new IllegalArgumentException("bad"), request);
+
+    assertTrue(result.contains("authorization: *************"));
+    assertFalse(result.contains("secret"));
   }
 
   @Test

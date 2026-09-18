@@ -156,7 +156,7 @@ public class ErrorUtils {
       final var headerName = headerNames.nextElement();
       final var headerContent = request.getHeader(headerName);
 
-      if (headerName.equals(AUTHORIZATION)) {
+      if (headerName.equalsIgnoreCase(AUTHORIZATION)) {
         errorMessage.append(headerName).append(": ").append("*************").append("\n");
       } else {
         errorMessage.append(headerName).append(": ").append(headerContent).append("\n");
