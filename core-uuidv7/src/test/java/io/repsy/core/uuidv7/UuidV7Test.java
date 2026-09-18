@@ -22,7 +22,7 @@ class UuidV7Test {
   void generatorProducesUuidV7AndInsertEvents() {
     final var generator = new UuidV7Generator();
     final var generated = generator.generate(null, new Object(), null, EventType.INSERT);
-    assertTrue(generated.version() == 7);
+    assertEquals(7, generated.version());
     assertEquals(EnumSet.of(EventType.INSERT), generator.getEventTypes());
   }
 
