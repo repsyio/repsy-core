@@ -15,6 +15,11 @@
   <artifactId>core-bom</artifactId>
   <packaging>pom</packaging>
 
+  <properties>
+    <!-- Pure dependency-management BOM, no source to analyze or cover. -->
+    <sonar.skip>true</sonar.skip>
+  </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
