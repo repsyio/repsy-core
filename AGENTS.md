@@ -74,6 +74,30 @@ check) but still runs the other checks. Before considering a change done, run a 
   (both provided by `core-parent`).
 - Keep instruction coverage at or above 80% per module — this is a hard gate, not a suggestion.
 
+## Merging to `main`
+
+Two PRs can each pass CI against an older `main`, merge without a textual conflict, and still break
+the build together (in `repsy`, RPS-901 and RPS-904 did: an unused import failed Checkstyle on
+`main` and then on every open PR). To rule that out, `main` is merged through a **GitHub merge
+queue**. The queue builds each PR on top of the entries ahead of it and merges it only if that
+combination is green.
+
+- Enqueue a PR with `gh pr merge <n> --auto --squash` (or the "Merge when ready" button). Do not
+  update the branch by hand before merging: the queue already tests it against the latest `main`.
+- `.github/workflows/pr-checks.yml` runs on `pull_request` and on `merge_group`, so every check
+  below reports on both. A workflow that a required check comes from must keep the `merge_group`
+  trigger, or queued PRs never get a result and time out.
+- Required checks in the `main-branch-protection` ruleset: `Java Core Lib check` and
+  `Editorconfig check - All`. Add a new job to that list when it should gate merges.
+- Queue settings: squash merge, `ALLGREEN` grouping, up to 5 entries built at once, 60 minutes
+  to report checks.
+- `gh pr merge --admin` skips the queue and the required checks. Org admins keep that bypass as a
+  break-glass for a red `main` or a stuck queue only. A PR merged that way is not re-verified
+  against the other open PRs, so do not use it for routine merges.
+- `repsy` consumes this repository as its `core/` submodule. Only bump that pointer to a commit
+  that is on this repository's `main`: a commit that only exists on a PR branch disappears from
+  the remote when the branch is deleted on merge.
+
 ## Releases
 
 - Versioning/tagging is handled by `maven-release-plugin` (configured in the root `pom.xml`,
