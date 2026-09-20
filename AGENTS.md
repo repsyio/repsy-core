@@ -103,6 +103,26 @@ combination is green.
 - Versioning/tagging is handled by `maven-release-plugin` (configured in the root `pom.xml`,
   tag format `v@{project.version}`) via the `.github/workflows/release.yml` pipeline. Don't bump
   versions by hand as part of unrelated changes.
+- Run a release with the **Release | Core** workflow (`workflow_dispatch`, or
+  `gh workflow run release.yml`). `main` requires a pull request and the workflow token is not a
+  bypass actor of the `main-branch-protection` ruleset, so the workflow never pushes to `main`:
+  1. `release:prepare` commits the release version and then the next development version, and
+     tags the release commit `v<version>`, all locally.
+  2. The workflow pushes those commits to a `release/v<version>` branch, together with the tag, and
+     opens a `Release <version>` pull request that it enqueues with auto-merge (squash).
+  3. Merging that pull request moves `main` to the next development version. The tag stays on the
+     release commit, whose parent is the `main` commit the workflow started from. The squash merge
+     gives `main` a new commit, so the tagged commit is reachable through the tag, not through
+     `main`'s history.
+- The workflow needs **Allow GitHub Actions to create and approve pull requests** turned on in the
+  repository's Actions settings, or `gh pr create` is refused.
+- Pull requests opened with the workflow token don't trigger `pull_request` workflows. Once
+  `pr-checks.yml` checks are required, the release pull request gets its result from the merge
+  queue's `merge_group` run. If the queue won't take it without the `pull_request` checks, open the
+  pull request with a GitHub App token instead of `github.token`.
+- If the pull request can't merge, delete the `release/v<version>` branch and the `v<version>` tag
+  (`git push origin --delete release/v<version> v<version>`) before running the workflow again;
+  `release:prepare` fails when the tag already exists.
 
 ## Adding a new module
 

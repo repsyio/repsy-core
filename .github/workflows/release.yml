@@ -3,8 +3,16 @@ name: Release | Core
 on:
   workflow_dispatch:
 
+# `main` only accepts changes through a pull request, and the workflow token is not a bypass actor
+# of the `main-branch-protection` ruleset, so this workflow never pushes to `main`. It pushes the
+# release commits to a `release/<tag>` branch and merges them with a pull request instead.
 permissions:
   contents: write
+  pull-requests: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -24,6 +32,14 @@ jobs:
           distribution: "temurin"
           cache: maven
 
+      # release:prepare commits the release and next development versions and creates the tag,
+      # so it needs a committer identity.
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # `pushChanges` is false in the root pom: this only commits and tags locally.
       - name: Run release:prepare
         run: |
           mvn -B release:prepare \
@@ -31,7 +47,34 @@ jobs:
             -Dcheckstyle.skip=true \
             -Dfmt.skip=true
 
-      - name: Push release commits and tags
+      - name: Push release branch and tag
+        id: push
         run: |
-          git push origin HEAD
-          git push origin --tags
+          tag="$(sed -n 's/^scm\.tag=//p' release.properties)"
+          if [ -z "$tag" ]; then
+            echo "release.properties has no scm.tag; release:prepare did not complete" >&2
+            exit 1
+          fi
+          branch="release/${tag}"
+          git checkout -b "$branch"
+          git push origin "$branch" "$tag"
+          {
+            echo "tag=${tag}"
+            echo "branch=${branch}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open and merge the release pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.push.outputs.tag }}
+          BRANCH: ${{ steps.push.outputs.branch }}
+        run: |
+          url="$(gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Release ${TAG#v}" \
+            --body "Release commits made by \`release:prepare\` in the Release | Core workflow: the release version, tagged \`${TAG}\`, then the next development version. Merging this pull request moves \`main\` to the next development version.")"
+          # Auto-merge when checks or the merge queue still have to report, a plain merge when
+          # the pull request is already mergeable.
+          gh pr merge "$url" --auto --squash || gh pr merge "$url" --squash
+          echo "Release pull request: ${url}" >> "$GITHUB_STEP_SUMMARY"
