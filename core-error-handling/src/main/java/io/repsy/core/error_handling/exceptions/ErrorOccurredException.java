@@ -15,12 +15,14 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
+/**
+ * Wraps an unexpected failure. The response always carries the fixed {@code errorOccurred} msgId:
+ * {@code ErrorHandler} returns the exception message as both the {@code msgId} and the {@code text}
+ * of the response, so a constructor that accepted a free-text message would let a caller leak it
+ * (or request content) to the client (RPS-1062).
+ */
 public class ErrorOccurredException extends BaseException {
   public ErrorOccurredException(final Exception ex) {
     super("errorOccurred", ex);
-  }
-
-  public ErrorOccurredException(final String message, final Exception ex) {
-    super(message, ex);
   }
 }
