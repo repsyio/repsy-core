@@ -41,7 +41,9 @@ import io.repsy.core.error_handling.utils.ErrorUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import org.junit.jupiter.api.Test;
@@ -76,8 +78,7 @@ class ErrorHandlingTest {
     assertEquals(cause, new ManifestSerializationException("message", cause).getCause());
     assertEquals(cause, new SslContextInitializationException("message", cause).getCause());
     assertEquals(cause, new ErrorOccurredException(cause).getCause());
-    assertEquals("custom", new ErrorOccurredException("custom", cause).getMessage());
-    assertEquals(cause, new ErrorOccurredException("custom", cause).getCause());
+    assertEquals("errorOccurred", new ErrorOccurredException(cause).getMessage());
     assertEquals("message", new ManifestListResolutionException("message").getMessage());
     assertEquals(cause, new ManifestListResolutionException("message", cause).getCause());
   }
@@ -111,7 +112,7 @@ class ErrorHandlingTest {
             "x",
             new IllegalArgumentException());
     assertTrue(ErrorUtils.exceptionToString(conversion, request).contains("Source Type"));
-    final var method = new HttpRequestMethodNotSupportedException("POST", java.util.List.of("GET"));
+    final var method = new HttpRequestMethodNotSupportedException("POST", List.of("GET"));
     assertTrue(ErrorUtils.exceptionToString(method, request).contains("Supported HTTP Methods"));
     final var missing = new MissingServletRequestParameterException("limit", "int");
     assertTrue(
@@ -141,5 +142,15 @@ class ErrorHandlingTest {
     final var cause = new IllegalArgumentException();
     final var exception = new ErrorOccurredException(cause);
     assertSame(cause, exception.getCause());
+  }
+
+  @Test
+  void errorOccurredExceptionAcceptsOnlyACauseSoNoFreeTextReachesTheClient() {
+    final var parameterTypes =
+        Arrays.stream(ErrorOccurredException.class.getConstructors())
+            .map(constructor -> List.of(constructor.getParameterTypes()))
+            .toList();
+
+    assertEquals(List.of(List.<Class<?>>of(Exception.class)), parameterTypes);
   }
 }
