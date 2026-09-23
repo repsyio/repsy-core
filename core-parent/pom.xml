@@ -40,6 +40,14 @@
     <!-- Plugin Versions -->
     <fmt-maven-plugin.version>2.29</fmt-maven-plugin.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+    <!--
+      The next three are the versions Maven 3.9.x already resolved for these plugins when the
+      <version> was missing (default lifecycle bindings for compiler and surefire, latest release
+      for enforcer); they are pinned here as-is, not upgraded.
+    -->
+    <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+    <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+    <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
     <spotbugs-maven-plugin.version>4.10.4.1</spotbugs-maven-plugin.version>
     <!-- Plugin Dependency Versions -->
     <checkstyle.version>14.1.0</checkstyle.version>
@@ -157,6 +165,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
         <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
@@ -243,6 +252,7 @@
 
       <plugin>
         <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${maven-enforcer-plugin.version}</version>
         <executions>
           <execution>
             <id>enforce-versions-compile</id>
@@ -267,6 +277,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
         <configuration>
           <argLine>${argLine} -Duser.timezone=UTC</argLine>
         </configuration>
