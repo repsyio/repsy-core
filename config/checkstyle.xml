@@ -122,7 +122,7 @@
       <property name="ignoreSetter" value="true"/>
       <property name="ignoreConstructorParameter" value="true"/>
       <property name="setterCanReturnItsClass" value="true"/>
-      <property name="severity" value="warning"/>
+      <property name="severity" value="error"/>
     </module>
 
     <module name="IllegalInstantiation"/>
@@ -135,7 +135,7 @@
     </module>
 
     <module name="MissingSwitchDefault">
-      <property name="severity" value="warning"/>
+      <property name="severity" value="error"/>
     </module>
     <module name="SimplifyBooleanExpression"/>
     <module name="SimplifyBooleanReturn"/>
