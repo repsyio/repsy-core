@@ -45,9 +45,9 @@
       <version> was missing (default lifecycle bindings for compiler and surefire, latest release
       for enforcer); they are pinned here as-is, not upgraded.
     -->
-    <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+    <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
     <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
-    <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+    <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
     <spotbugs-maven-plugin.version>4.10.4.1</spotbugs-maven-plugin.version>
     <!-- Plugin Dependency Versions -->
     <checkstyle.version>14.1.0</checkstyle.version>
@@ -68,7 +68,7 @@
       <dependency>
         <groupId>tools.jackson</groupId>
         <artifactId>jackson-bom</artifactId>
-        <version>3.2.2</version>
+        <version>3.2.3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
