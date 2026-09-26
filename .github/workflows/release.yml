@@ -3,6 +3,8 @@ name: Release | Core
 on:
   workflow_dispatch:
 
+# This workflow tags; it deploys nothing (RPS-1085).
+#
 # `main` only accepts changes through a pull request, and the workflow token is not a bypass actor
 # of the `main-branch-protection` ruleset, so this workflow never pushes to `main`. It pushes the
 # release commits to a `release/<tag>` branch and merges them with a pull request instead.

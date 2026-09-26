@@ -35,6 +35,8 @@ mvn verify -DskipTests
 
 ## Using the libraries
 
+The artifacts are not published to a repository: build them from a checkout or a git submodule of this repository (`mvn install`) before a project can resolve them.
+
 Import the BOM in a consuming Maven project to keep Repsy Core module versions aligned:
 
 ```xml
