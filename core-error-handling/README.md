@@ -25,6 +25,15 @@ Notable ones:
 - `DataExportRequestException`, `RedirectToPathException`, `ErrorOccurredException`,
   `RetryableException`, `SslContextInitializationException` — misc. operational errors
 
+The message of `BadRequestException`, `UnAuthorizedException`, `AccessNotAllowedException`,
+`ItemNotFoundException`, `ItemAlreadyExistException`, `SignatureNotVerifiedException`,
+`MfaException`, `DataExportRequestException` and `SubscriptionLimitReachedException` is a **msgId**:
+a bare identifier (letters, digits and underscores) that names an entry in the consuming service's
+message bundle. Their constructors throw `IllegalArgumentException` for anything else (free text, a
+formatted sentence, a request path), because the error handler returns the message to the client as
+it is. `null` is accepted and lets the handler fall back to its default id for the exception type.
+Log the variable details instead of putting them in the id.
+
 ### `ErrorUtils` (`io.repsy.core.error_handling.utils`)
 
 A Lombok `@UtilityClass` with overloads of `exceptionToString(Throwable, HttpServletRequest)` that

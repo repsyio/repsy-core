@@ -15,8 +15,10 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
+import org.jspecify.annotations.Nullable;
+
 class BaseException extends RuntimeException {
-  BaseException(final String msgId) {
+  BaseException(final @Nullable String msgId) {
     super(msgId);
   }
 

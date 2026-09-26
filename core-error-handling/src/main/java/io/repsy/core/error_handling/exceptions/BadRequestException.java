@@ -15,8 +15,10 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
+import org.jspecify.annotations.Nullable;
+
 public class BadRequestException extends BaseException {
-  public BadRequestException(final String msgId) {
-    super(msgId);
+  public BadRequestException(final @Nullable String msgId) {
+    super(MsgIds.require(msgId));
   }
 }
