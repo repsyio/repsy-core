@@ -4,7 +4,7 @@ Guidance for AI coding agents working in this repository.
 
 ## What this repository is
 
-`repsy-core` is a Maven multi-module project publishing shared Java libraries consumed by other
+`repsy-core` is a Maven multi-module project providing shared Java libraries consumed by other
 Repsy services: application events, error-handling/exceptions, REST response envelopes, and
 time-sortable entity id generators (ULID and UUIDv7). See the root `README.md` and each module's
 own `README.md` for details on what it does.
@@ -123,6 +123,22 @@ combination is green.
 - If the pull request can't merge, delete the `release/v<version>` branch and the `v<version>` tag
   (`git push origin --delete release/v<version> v<version>`) before running the workflow again;
   `release:prepare` fails when the tag already exists.
+- A release is a tag, nothing more. Nothing builds or deploys the tagged version: there is no
+  `distributionManagement`, no `deploy` or `release:perform` step, and no artifact on repo.repsy.io
+  or Maven Central (decided in RPS-1085). `release:prepare` only runs `clean verify` locally to
+  check the release commit. Every consumer (`repsy`, and the private `repsy-mono`) vendors this
+  repository as a git submodule and builds it with `mvn install -f core/pom.xml`. The
+  `v<version>` tag names a released version; the tagged commit is not on `main`'s history, so a
+  consumer still pins a commit on `main` (see "Merging to `main`"), normally the release pull
+  request's squash commit or a later one.
+- The release pull request moves `main` to the next development version, so a consumer that bumps
+  its submodule pointer past it must bump `<parent><version>` in its root `pom.xml` in the same
+  change: Maven ignores `relativePath` when the parent version does not match.
+- Revisit publishing (repo.repsy.io first, Central only with a public consumer) when a consumer
+  cannot use the submodule. The prerequisites are listed in RPS-1085: a checkout-independent
+  Checkstyle config location in `core-parent`, POM metadata (`name`, `description`, `url`,
+  `licenses`, `developers`) and source/javadoc/signing plugins for Central, and registry
+  credentials as Actions secrets in this repository.
 
 ## Adding a new module
 
