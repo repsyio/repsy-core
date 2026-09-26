@@ -15,8 +15,10 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
+import org.jspecify.annotations.Nullable;
+
 public class ItemAlreadyExistException extends BaseException {
-  public ItemAlreadyExistException(final String msgId) {
-    super(msgId);
+  public ItemAlreadyExistException(final @Nullable String msgId) {
+    super(MsgIds.require(msgId));
   }
 }

@@ -23,12 +23,13 @@ import org.jspecify.annotations.Nullable;
 public class UnAuthorizedException extends BaseException {
   private final @Nullable Map<String, String> headers;
 
-  public UnAuthorizedException(final String msgId, final @Nullable Map<String, String> headers) {
-    super(msgId);
+  public UnAuthorizedException(
+      final @Nullable String msgId, final @Nullable Map<String, String> headers) {
+    super(MsgIds.require(msgId));
     this.headers = headers;
   }
 
-  public UnAuthorizedException(final String msgId) {
+  public UnAuthorizedException(final @Nullable String msgId) {
     this(msgId, null);
   }
 }

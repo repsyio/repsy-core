@@ -15,8 +15,10 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
+import org.jspecify.annotations.Nullable;
+
 public class SubscriptionLimitReachedException extends BaseException {
-  public SubscriptionLimitReachedException(final String messageId) {
-    super(messageId);
+  public SubscriptionLimitReachedException(final @Nullable String messageId) {
+    super(MsgIds.require(messageId));
   }
 }
