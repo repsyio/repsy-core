@@ -21,6 +21,12 @@ It centralizes:
   - `apache-rat-plugin` — license header check
 - **Baseline dependencies** — Lombok (compile), JUnit Jupiter and Mockito (test).
 
+## Properties a consumer can set
+
+| Property | Default | Meaning |
+| --- | --- | --- |
+| `test.jvm.args` | empty | Extra JVM arguments of every forked test JVM. It is appended to the `argLine` of Surefire (configured here) and of Failsafe (managed here; a consumer declares the plugin and its executions), after JaCoCo's agent and `-Duser.timezone=UTC`. Set it in the consumer's `<properties>` (for example `-XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=256m`) or with `-Dtest.jvm.args=...`. Do not set `argLine` itself for this: Maven would resolve `${argLine}` before JaCoCo's `prepare-agent` runs and the coverage would be lost silently. |
+
 ## Usage
 
 Every other module in this repository declares `core-parent` as its Maven `<parent>`. You
