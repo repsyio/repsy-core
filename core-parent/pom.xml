@@ -32,6 +32,19 @@
     <bouncycastle.version>1.83</bouncycastle.version>
     <dnsjava.version>3.6.4</dnsjava.version>
     <guava.version>33.5.0-jre</guava.version>
+    <!--
+      Overrides the 2.4.240 of the Spring Boot BOM (RPS-1676). The <h2.version> property alone does
+      not work here: spring-boot-dependencies is imported below, and an import resolves its own
+      properties, so the explicit <dependencyManagement> entry for com.h2database:h2 is what wins.
+      H2 2.4.240 keeps the session that prepared a CHECK (col IN (...)) constraint: once HikariCP
+      retires that connection (max-lifetime, 30 minutes by default) every insert and update of the
+      table fails with "The database has been closed". Fixed in H2 2.5.250:
+      https://github.com/h2database/h2database/issues/4308
+      https://github.com/h2database/h2database/issues/4320
+      https://github.com/h2database/h2database/issues/4342
+      Drop the entry once spring-boot.version manages H2 >= 2.5.250.
+    -->
+    <h2.version>2.5.252</h2.version>
     <gson.version>2.13.2</gson.version>
     <httpclient.version>4.5.14</httpclient.version>
     <hypersistence.version>3.14.1</hypersistence.version>
@@ -70,6 +83,13 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- Declared before the imports: a direct entry wins over an imported one (see h2.version). -->
+      <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>${h2.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
