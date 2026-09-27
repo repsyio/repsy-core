@@ -15,6 +15,18 @@
     <maven.min.version>3.9.7</maven.min.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <checkstyle.config.location>../config/checkstyle.xml</checkstyle.config.location>
+    <!--
+      Extra JVM arguments of every forked test JVM: Surefire (unit tests) and Failsafe (integration
+      tests, once a module binds it). Empty by default, so a consumer that does not set it gets the
+      JVM's defaults. A consumer sets this property (for example
+      "-XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=256m") instead of restating the plugins'
+      argLine, and can set it on the command line too (-Dtest.jvm.args=...).
+
+      Do not set the "argLine" property for this: Maven would freeze "${argLine}" in the plugin
+      configuration when it builds the model, before JaCoCo's prepare-agent has put its agent in
+      it, and the coverage would be lost without any error.
+    -->
+    <test.jvm.args></test.jvm.args>
     <!-- Dependency Versions -->
     <awspring-s3.version>3.4.2</awspring-s3.version>
     <bouncycastle.version>1.83</bouncycastle.version>
@@ -47,6 +59,7 @@
     -->
     <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
     <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+    <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
     <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
     <spotbugs-maven-plugin.version>4.10.4.1</spotbugs-maven-plugin.version>
     <!-- Plugin Dependency Versions -->
@@ -121,6 +134,23 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <!--
+          Failsafe is not bound here (no module of this repository has integration tests): a
+          consumer that runs *IT classes declares the plugin with its executions and inherits this
+          version and argLine (same as Surefire's below, so the JaCoCo agent covers them too).
+        -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${maven-failsafe-plugin.version}</version>
+          <configuration>
+            <argLine>${argLine} -Duser.timezone=UTC ${test.jvm.args}</argLine>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.jacoco</groupId>
@@ -279,7 +309,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
-          <argLine>${argLine} -Duser.timezone=UTC</argLine>
+          <argLine>${argLine} -Duser.timezone=UTC ${test.jvm.args}</argLine>
         </configuration>
       </plugin>
 
