@@ -28,7 +28,7 @@ import org.jspecify.annotations.Nullable;
  */
 final class MsgIds {
 
-  private static final Pattern BARE_IDENTIFIER = Pattern.compile("[A-Za-z0-9_]+");
+  private static final Pattern BARE_IDENTIFIER = Pattern.compile("\\w+");
 
   private MsgIds() {}
 
