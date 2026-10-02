@@ -29,38 +29,38 @@ public class RestResponseFactory {
   private final MessageSource messageSource;
 
   public <T> RestResponse<T> error(final String msgId) {
-    return this.createMessage(ResponseType.ERROR, msgId);
+    return this.createResponse(ResponseType.ERROR, msgId);
   }
 
   public <T> RestResponse<T> error(final String msgId, final T data) {
-    return this.createMessage(ResponseType.ERROR, msgId, data);
+    return this.createResponse(ResponseType.ERROR, msgId, data);
   }
 
   public <T> RestResponse<T> success(final String msgId) {
-    return this.createMessage(ResponseType.SUCCESS, msgId);
+    return this.createResponse(ResponseType.SUCCESS, msgId);
   }
 
   public <T> RestResponse<T> success(final String msgId, final T data) {
-    return this.createMessage(ResponseType.SUCCESS, msgId, data);
+    return this.createResponse(ResponseType.SUCCESS, msgId, data);
   }
 
   public <T> RestResponse<T> warning(final String msgId) {
-    return this.createMessage(ResponseType.WARNING, msgId);
+    return this.createResponse(ResponseType.WARNING, msgId);
   }
 
   public <T> RestResponse<T> warning(final String msgId, final @Nullable T data) {
-    return this.createMessage(ResponseType.WARNING, msgId, data);
+    return this.createResponse(ResponseType.WARNING, msgId, data);
   }
 
   public RestResponseFactory(final MessageSource messageSource) {
     this.messageSource = messageSource;
   }
 
-  private <T> RestResponse<T> createMessage(final ResponseType type, final String msgId) {
-    return this.createMessage(type, msgId, null);
+  private <T> RestResponse<T> createResponse(final ResponseType type, final String msgId) {
+    return this.createResponse(type, msgId, null);
   }
 
-  private <T> RestResponse<T> createMessage(
+  private <T> RestResponse<T> createResponse(
       final ResponseType type, final String msgId, final @Nullable T data) {
     final RestResponse<T> restResponse = new RestResponse<>(msgId, type);
 

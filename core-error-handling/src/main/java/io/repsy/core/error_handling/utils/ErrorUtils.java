@@ -37,13 +37,13 @@ public class ErrorUtils {
 
   public static String exceptionToString(final Throwable ex, final HttpServletRequest request) {
 
-    return requestHeader(request) + ExceptionUtils.getStackTrace(ex);
+    return reportHeader(request) + ExceptionUtils.getStackTrace(ex);
   }
 
   public static String exceptionToString(
       final ConversionFailedException ex, final HttpServletRequest request) {
 
-    return requestHeader(request)
+    return reportHeader(request)
         + "Source Type: "
         + ex.getSourceType()
         + "\n"
@@ -59,7 +59,7 @@ public class ErrorUtils {
   public static String exceptionToString(
       final HttpRequestMethodNotSupportedException ex, final HttpServletRequest request) {
 
-    return requestHeader(request)
+    return reportHeader(request)
         + "Method: "
         + ex.getMethod()
         + "\n"
@@ -105,7 +105,7 @@ public class ErrorUtils {
         + ExceptionUtils.getStackTrace(ex);
   }
 
-  private static String requestHeader(final HttpServletRequest request) {
+  private static String reportHeader(final HttpServletRequest request) {
 
     return requestToString(request)
         + STACK_TRACE_SEPARATOR
@@ -116,9 +116,9 @@ public class ErrorUtils {
 
   private static String requestToString(final HttpServletRequest request) {
 
-    final var errorMessage = new StringBuilder();
+    final var requestDump = new StringBuilder();
 
-    errorMessage
+    requestDump
         .append("\n")
         .append("Request -------------------------------------------\n")
         .append("Path: ")
@@ -129,10 +129,10 @@ public class ErrorUtils {
         .append("\n");
 
     if (request.getQueryString() != null) {
-      errorMessage.append("Query String: ").append(request.getQueryString()).append("\n");
+      requestDump.append("Query String: ").append(request.getQueryString()).append("\n");
 
       try {
-        errorMessage
+        requestDump
             .append("Parameters: ")
             .append(
                 Collections.list(request.getParameterNames()).stream()
@@ -140,11 +140,11 @@ public class ErrorUtils {
                     .toList())
             .append("\n");
       } catch (final Exception _) {
-        errorMessage.append("Parameters: unavailable (malformed query string)\n");
+        requestDump.append("Parameters: unavailable (malformed query string)\n");
       }
     }
 
-    errorMessage.append("Headers -------------------------------------------\n");
+    requestDump.append("Headers -------------------------------------------\n");
 
     final var headerNames = request.getHeaderNames();
 
@@ -153,9 +153,9 @@ public class ErrorUtils {
       final var headerContent = request.getHeader(headerName);
 
       if (headerName.equalsIgnoreCase(AUTHORIZATION)) {
-        errorMessage.append(headerName).append(": ").append("*************").append("\n");
+        requestDump.append(headerName).append(": ").append("*************").append("\n");
       } else {
-        errorMessage.append(headerName).append(": ").append(headerContent).append("\n");
+        requestDump.append(headerName).append(": ").append(headerContent).append("\n");
       }
     }
 
@@ -167,11 +167,11 @@ public class ErrorUtils {
               .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
               .toString();
 
-      errorMessage.append("Content -------------------------------------------\n").append(content);
+      requestDump.append("Content -------------------------------------------\n").append(content);
     } catch (final Exception _) {
       // pass
     }
 
-    return errorMessage.toString();
+    return requestDump.toString();
   }
 }

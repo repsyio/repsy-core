@@ -28,7 +28,7 @@ public class RandomUlidGenerator implements BeforeExecutionGenerator {
   @Override
   public Object generate(
       final SharedSessionContractImplementor session,
-      final Object entityInstance,
+      final Object owner,
       final @Nullable Object currentValue,
       final EventType eventType) {
 
