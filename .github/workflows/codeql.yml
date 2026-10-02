@@ -2,7 +2,6 @@ name: CodeQL
 
 permissions:
   contents: read
-  security-events: write
 
 on:
   pull_request:
@@ -19,6 +18,10 @@ jobs:
   analyze:
     name: Analyze Java
     runs-on: hetzner
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -31,6 +34,12 @@ jobs:
 
       - name: Setup Maven Action
         uses: s4u/setup-maven-action@4a02cbd99769e46198135c31d5097c94618ba3f5 # v1.21.0
+        with:
+          # Checkout already ran above, before CodeQL init; the JDK step below owns the Temurin
+          # JDK and the Maven cache.
+          checkout-enabled: false
+          cache-enabled: false
+          java-distribution: temurin
 
       - name: Set up JDK
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6

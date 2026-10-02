@@ -19,6 +19,7 @@ jobs:
   pre-checks:
     name: Editorconfig check - All
     runs-on: hetzner
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -39,6 +40,7 @@ jobs:
   java-checks:
     name: Java Core Lib check
     runs-on: hetzner
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -50,6 +52,10 @@ jobs:
           # Checkout already ran above with fetch-depth: 0 for SonarCloud blame data;
           # setup-maven-action's own default checkout would re-shallow the repo.
           checkout-enabled: false
+          # The JDK step below owns the Temurin JDK and the Maven cache; without these two the
+          # action installs Zulu and keeps a second ~/.m2 cache.
+          cache-enabled: false
+          java-distribution: temurin
 
       - name: Set up JDK
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6
@@ -65,10 +71,14 @@ jobs:
         run: mvn -B -ntp verify
 
       - name: Analyze with SonarCloud
-        # Dependabot-triggered runs don't receive regular repo secrets, so SONAR_TOKEN is empty.
+        # Dependabot-triggered and fork runs don't receive regular repo secrets, so SONAR_TOKEN is
+        # empty.
         # Merge queue runs would analyse a gh-readonly-queue/* branch that no PR owns, and
         # sonarcloud.yml analyses main right after the merge anyway.
-        if: github.actor != 'dependabot[bot]' && github.event_name != 'merge_group'
+        if: >-
+          github.actor != 'dependabot[bot]'
+          && github.event_name != 'merge_group'
+          && github.event.pull_request.head.repo.full_name == github.repository
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io

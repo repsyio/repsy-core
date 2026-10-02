@@ -19,6 +19,7 @@ concurrency:
 jobs:
   release:
     runs-on: hetzner
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -26,6 +27,10 @@ jobs:
 
       - name: Setup Maven Action
         uses: s4u/setup-maven-action@4a02cbd99769e46198135c31d5097c94618ba3f5 # v1.21.0
+        with:
+          # The JDK step below owns the Temurin JDK and the Maven cache.
+          cache-enabled: false
+          java-distribution: temurin
 
       - name: Set up JDK
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6
