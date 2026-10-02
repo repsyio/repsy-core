@@ -80,6 +80,7 @@ class MsgIdValidationTest {
   @ParameterizedTest
   @MethodSource("msgIdExceptions")
   void freeTextIsRejected(final Factory factory) {
+    final var create = factory.create();
     for (final var text :
         new String[] {
           "crate `a@1` already exists in this registry",
@@ -95,11 +96,10 @@ class MsgIdValidationTest {
           "",
           "%s"
         }) {
-      final var thrown =
-          assertThrows(IllegalArgumentException.class, () -> factory.create().apply(text));
+      final var thrown = assertThrows(IllegalArgumentException.class, () -> create.apply(text));
 
       assertEquals(
-          "A msgId must be a bare identifier ([A-Za-z0-9_]+) with an entry in messages.properties,"
+          "A msgId must be a bare identifier (\\w+) with an entry in messages.properties,"
               + " not free text; log the details instead",
           thrown.getMessage());
     }
