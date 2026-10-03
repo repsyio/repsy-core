@@ -5,16 +5,20 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 3
+    # Minor and patch bumps share one PR; majors stay individual so they get reviewed alone.
     groups:
-      github-actions:
-        patterns:
-          - "*"
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 3
+    # Minor and patch bumps share one PR; majors stay individual so they get reviewed alone.
     groups:
-      maven-dependencies:
-        patterns:
-          - "*"
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
