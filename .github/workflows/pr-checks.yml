@@ -7,9 +7,6 @@ on:
   pull_request:
     branches:
       - main
-  # The merge queue on main builds every queued PR on top of the ones ahead of it and reports
-  # these same checks. Without this trigger, queued entries never get a result and time out.
-  merge_group:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -73,11 +70,9 @@ jobs:
       - name: Analyze with SonarCloud
         # Dependabot-triggered and fork runs don't receive regular repo secrets, so SONAR_TOKEN is
         # empty.
-        # Merge queue runs would analyse a gh-readonly-queue/* branch that no PR owns, and
         # sonarcloud.yml analyses main on a schedule.
         if: >-
           github.actor != 'dependabot[bot]'
-          && github.event_name != 'merge_group'
           && github.event.pull_request.head.repo.full_name == github.repository
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

@@ -78,26 +78,21 @@ check) but still runs the other checks. Before considering a change done, run a 
 
 Two PRs can each pass CI against an older `main`, merge without a textual conflict, and still break
 the build together (in `repsy`, RPS-901 and RPS-904 did: an unused import failed Checkstyle on
-`main` and then on every open PR). To rule that out, `main` is merged through a **GitHub merge
-queue**. The queue builds each PR on top of the entries ahead of it and merges it only if that
-combination is green.
+`main` and then on every open PR). There is **no merge queue**: `main` is protected by required
+checks only. After other PRs merged first, update your branch from `main` and let the checks re-run
+before you merge.
 
-- Enqueue a PR with `gh pr merge <n> --auto --squash` (or the "Merge when ready" button). Do not
-  update the branch by hand before merging: the queue already tests it against the latest `main`.
-- `.github/workflows/pr-checks.yml` runs on `pull_request` and on `merge_group`, so every check
-  below reports on both. A workflow that a required check comes from must keep the `merge_group`
-  trigger, or queued PRs never get a result and time out.
+- Merge with `gh pr merge <n> --auto --squash` (or the "Merge when ready" button) once the required
+  checks pass.
+- `.github/workflows/pr-checks.yml` runs on `pull_request` only.
 - Required checks in the `main-branch-protection` ruleset: `Java Core Lib check`,
   `Editorconfig check - All` and `PR title` (`pr-title.yml`). Add a new job to that list when it
-  should gate merges. `pr-title.yml` keeps its `merge_group` trigger and passes on queue entries,
-  so a queued PR is not blocked by it.
+  should gate merges.
 - Every PR title reads `RPS-1234: Description`, or `RPS-1, RPS-2: Description` for several
   tickets. `pr-title.yml` checks it; Dependabot PRs are exempt. The squash commit takes the title.
-- Queue settings: squash merge, `ALLGREEN` grouping, up to 5 entries built at once, 60 minutes
-  to report checks.
-- `gh pr merge --admin` skips the queue and the required checks. Org admins keep that bypass as a
-  break-glass for a red `main` or a stuck queue only. A PR merged that way is not re-verified
-  against the other open PRs, so do not use it for routine merges.
+- `gh pr merge --admin` skips the required checks. Org admins keep that bypass as a break-glass for
+  a red `main` only. A PR merged that way is not re-verified against the other open PRs, so do not
+  use it for routine merges.
 - `repsy` consumes this repository as its `core/` submodule. Only bump that pointer to a commit
   that is on this repository's `main`: a commit that only exists on a PR branch disappears from
   the remote when the branch is deleted on merge.
@@ -120,17 +115,16 @@ combination is green.
   1. `release:prepare` commits the release version and then the next development version, and
      tags the release commit `v<version>`, all locally.
   2. The workflow pushes those commits to a `release/v<version>` branch, together with the tag, and
-     opens a `Release <version>` pull request that it enqueues with auto-merge (squash).
+     opens a `Release <version>` pull request that it merges with auto-merge (squash).
   3. Merging that pull request moves `main` to the next development version. The tag stays on the
      release commit, whose parent is the `main` commit the workflow started from. The squash merge
      gives `main` a new commit, so the tagged commit is reachable through the tag, not through
      `main`'s history.
 - The workflow needs **Allow GitHub Actions to create and approve pull requests** turned on in the
   repository's Actions settings, or `gh pr create` is refused.
-- Pull requests opened with the workflow token don't trigger `pull_request` workflows. Once
-  `pr-checks.yml` checks are required, the release pull request gets its result from the merge
-  queue's `merge_group` run. If the queue won't take it without the `pull_request` checks, open the
-  pull request with a GitHub App token instead of `github.token`.
+- Pull requests opened with the workflow token don't trigger `pull_request` workflows. While
+  `pr-checks.yml` checks are required, the release pull request gets no result and can't merge;
+  open it with a GitHub App token instead of `github.token` if that blocks the release.
 - If the pull request can't merge, delete the `release/v<version>` branch and the `v<version>` tag
   (`git push origin --delete release/v<version> v<version>`) before running the workflow again;
   `release:prepare` fails when the tag already exists.
