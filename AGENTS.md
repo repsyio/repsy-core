@@ -104,7 +104,7 @@ combination is green.
 
 ## Dependabot and code scanning
 
-- SonarCloud (`sonarcloud.yml`, on every push to `main`) is the only code scanner. There is no CodeQL workflow and GitHub code scanning is not configured; do not add them back (RPS-1849).
+- SonarCloud (PR analysis in `pr-checks.yml`; `main` is analysed by `sonarcloud.yml` at 10, 12, 14, 16 and 18 o'clock Europe/Amsterdam, not on every merge) is the only code scanner. There is no CodeQL workflow and GitHub code scanning is not configured; do not add them back (RPS-1849).
 - `.github/dependabot.yml` checks daily. Minor and patch updates share one PR per update entry (group `minor-and-patch`); a major update gets its own PR. Every entry keeps `open-pull-requests-limit: 3`.
 - The same rules apply in `repsy` and `repsy-mono`; change them in all three repositories together.
 
