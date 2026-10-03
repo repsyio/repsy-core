@@ -81,7 +81,7 @@ jobs:
             --head "$BRANCH" \
             --title "Release ${TAG#v}" \
             --body "Release commits made by \`release:prepare\` in the Release | Core workflow: the release version, tagged \`${TAG}\`, then the next development version. Merging this pull request moves \`main\` to the next development version.")"
-          # Auto-merge when checks or the merge queue still have to report, a plain merge when
+          # Auto-merge when checks still have to report, a plain merge when
           # the pull request is already mergeable.
           gh pr merge "$url" --auto --squash || gh pr merge "$url" --squash
           echo "Release pull request: ${url}" >> "$GITHUB_STEP_SUMMARY"
