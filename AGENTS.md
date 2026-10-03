@@ -102,6 +102,13 @@ combination is green.
   that is on this repository's `main`: a commit that only exists on a PR branch disappears from
   the remote when the branch is deleted on merge.
 
+## Dependabot and code scanning
+
+- SonarCloud (`sonarcloud.yml`, on every push to `main`) is the only code scanner. There is no CodeQL workflow and GitHub code scanning is not configured; do not add them back (RPS-1849).
+- `.github/dependabot.yml` checks daily. Minor and patch updates share one PR per update entry (group `minor-and-patch`); a major update gets its own PR. Every entry keeps `open-pull-requests-limit: 3`.
+- The same rules apply in `repsy` and `repsy-mono`; change them in all three repositories together.
+
+
 ## Releases
 
 - Versioning/tagging is handled by `maven-release-plugin` (configured in the root `pom.xml`,
