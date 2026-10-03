@@ -18,7 +18,7 @@ concurrency:
 jobs:
   analyze:
     name: Analyze main branch
-    runs-on: hetzner
+    runs-on: hetzner-md
     timeout-minutes: 40
     steps:
       - name: Checkout
