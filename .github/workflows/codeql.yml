@@ -17,6 +17,9 @@ concurrency:
 jobs:
   analyze:
     name: Analyze Java
+    # Dependency-only bumps add runner time without useful findings; main and the weekly schedule
+    # still get analysed.
+    if: github.actor != 'dependabot[bot]'
     runs-on: hetzner
     timeout-minutes: 30
     permissions:
