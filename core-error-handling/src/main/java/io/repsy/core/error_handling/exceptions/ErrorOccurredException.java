@@ -21,8 +21,8 @@ package io.repsy.core.error_handling.exceptions;
  * of the response, so a constructor that accepted a free-text message would let a caller leak it
  * (or request content) to the client (RPS-1062).
  */
-public class ErrorOccurredException extends BaseException {
+public non-sealed class ErrorOccurredException extends BaseException implements TechnicalException {
   public ErrorOccurredException(final Exception ex) {
-    super("errorOccurred", ex);
+    super("errorOccurred", ex, Statuses.INTERNAL_SERVER_ERROR, "errorOccurred");
   }
 }

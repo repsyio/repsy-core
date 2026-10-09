@@ -15,8 +15,9 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-public class ManifestSerializationException extends BaseException {
+public non-sealed class ManifestSerializationException extends BaseException
+    implements TechnicalException {
   public ManifestSerializationException(final String message, final Throwable cause) {
-    super(message, cause);
+    super(message, cause, Statuses.INTERNAL_SERVER_ERROR, Statuses.INTERNAL_ERROR_CODE);
   }
 }

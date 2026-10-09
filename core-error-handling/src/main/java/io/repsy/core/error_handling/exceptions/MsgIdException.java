@@ -15,21 +15,17 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-import java.util.Map;
-import lombok.Getter;
-import org.jspecify.annotations.Nullable;
-
-@Getter
-public non-sealed class UnAuthorizedException extends BaseException implements MsgIdException {
-  private final @Nullable Map<String, String> headers;
-
-  public UnAuthorizedException(
-      final @Nullable String msgId, final @Nullable Map<String, String> headers) {
-    super(MsgIds.require(msgId), Statuses.UNAUTHORIZED, msgId);
-    this.headers = headers;
-  }
-
-  public UnAuthorizedException(final @Nullable String msgId) {
-    this(msgId, null);
-  }
-}
+/**
+ * Marker of the exceptions that carry a bare msgId (see {@link MsgIds}), the stable, client-visible
+ * code of the failure.
+ */
+public sealed interface MsgIdException
+    permits BadRequestException,
+        UnAuthorizedException,
+        AccessNotAllowedException,
+        ItemNotFoundException,
+        ItemAlreadyExistException,
+        SubscriptionLimitReachedException,
+        MfaException,
+        SignatureNotVerifiedException,
+        DataExportRequestException {}

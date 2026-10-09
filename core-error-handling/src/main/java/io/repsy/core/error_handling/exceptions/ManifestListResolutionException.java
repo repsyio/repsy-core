@@ -15,12 +15,13 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-public class ManifestListResolutionException extends BaseException {
+public non-sealed class ManifestListResolutionException extends BaseException
+    implements TechnicalException {
   public ManifestListResolutionException(final String message) {
-    super(message);
+    super(message, Statuses.INTERNAL_SERVER_ERROR, Statuses.INTERNAL_ERROR_CODE);
   }
 
   public ManifestListResolutionException(final String message, final Throwable cause) {
-    super(message, cause);
+    super(message, cause, Statuses.INTERNAL_SERVER_ERROR, Statuses.INTERNAL_ERROR_CODE);
   }
 }

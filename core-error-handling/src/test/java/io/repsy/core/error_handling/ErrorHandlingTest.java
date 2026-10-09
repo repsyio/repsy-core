@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import io.repsy.core.error_handling.exceptions.AccessNotAllowedException;
 import io.repsy.core.error_handling.exceptions.BadRequestException;
+import io.repsy.core.error_handling.exceptions.BaseException;
 import io.repsy.core.error_handling.exceptions.CryptoException;
 import io.repsy.core.error_handling.exceptions.DataExportRequestException;
 import io.repsy.core.error_handling.exceptions.ErrorOccurredException;
@@ -53,6 +54,45 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 
 class ErrorHandlingTest {
+  @Test
+  void everyBaseExceptionTypeIsExercisedHere() {
+    final var known =
+        List.of(
+            "AccessNotAllowedException",
+            "BadRequestException",
+            "CryptoException",
+            "DataExportRequestException",
+            "ErrorOccurredException",
+            "EventResponseException",
+            "ItemAlreadyExistException",
+            "ItemNotFoundException",
+            "JsonParseException",
+            "ManifestListResolutionException",
+            "ManifestParseException",
+            "ManifestSerializationException",
+            "MfaException",
+            "SignatureNotVerifiedException",
+            "SslContextInitializationException",
+            "SubscriptionLimitReachedException",
+            "UnAuthorizedException");
+    final var actual = new java.util.TreeSet<String>();
+    final var queue = new java.util.ArrayDeque<Class<?>>(List.of(BaseException.class));
+    while (!queue.isEmpty()) {
+      final var sub = queue.poll().getPermittedSubclasses();
+      if (sub == null) {
+        continue;
+      }
+      for (final var c : sub) {
+        if (c.getPermittedSubclasses() == null) {
+          actual.add(c.getSimpleName());
+        }
+        queue.add(c);
+      }
+    }
+
+    assertEquals(known, List.copyOf(actual), "New exception type: add tests for it in this class");
+  }
+
   @Test
   void exceptionTypesPreserveMessagesAndCauses() {
     final var cause = new IllegalStateException("cause");

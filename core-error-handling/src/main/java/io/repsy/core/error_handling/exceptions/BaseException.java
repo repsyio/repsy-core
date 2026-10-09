@@ -17,12 +17,64 @@ package io.repsy.core.error_handling.exceptions;
 
 import org.jspecify.annotations.Nullable;
 
-class BaseException extends RuntimeException {
-  BaseException(final @Nullable String msgId) {
-    super(msgId);
+/**
+ * Root of the exceptions an {@code ErrorHandler} maps to a response. Each concrete exception also
+ * implements one of the sealed markers {@link MsgIdException} (a stable, client-visible code) or
+ * {@link TechnicalException} (an internal failure whose message is never exposed).
+ */
+public abstract sealed class BaseException extends RuntimeException
+    permits BadRequestException,
+        UnAuthorizedException,
+        AccessNotAllowedException,
+        ItemNotFoundException,
+        ItemAlreadyExistException,
+        SubscriptionLimitReachedException,
+        MfaException,
+        SignatureNotVerifiedException,
+        DataExportRequestException,
+        CryptoException,
+        EventResponseException,
+        JsonParseException,
+        ErrorOccurredException,
+        ManifestListResolutionException,
+        ManifestParseException,
+        ManifestSerializationException,
+        SslContextInitializationException {
+
+  private final int status;
+  private final @Nullable String publicCode;
+
+  BaseException(final @Nullable String message, final int status, final @Nullable String code) {
+    super(message);
+    this.status = status;
+    this.publicCode = code;
   }
 
-  BaseException(final String message, final Throwable cause) {
+  BaseException(
+      final String message, final Throwable cause, final int status, final @Nullable String code) {
     super(message, cause);
+    this.status = status;
+    this.publicCode = code;
+  }
+
+  /**
+   * The HTTP status the exception maps to, as a plain number so this module needs no Spring web
+   * dependency.
+   *
+   * @return the HTTP status code
+   */
+  public int status() {
+    return this.status;
+  }
+
+  /**
+   * The machine readable code that is safe to put in a response, or {@code null} when the exception
+   * carries none and the handler answers with its default for the type. Never derived from free
+   * text.
+   *
+   * @return the public code
+   */
+  public @Nullable String publicCode() {
+    return this.publicCode;
   }
 }

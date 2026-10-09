@@ -15,21 +15,17 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-import java.util.Map;
-import lombok.Getter;
-import org.jspecify.annotations.Nullable;
+/** The HTTP status codes of the exceptions, as plain numbers (this module has no Spring web). */
+final class Statuses {
+  static final int BAD_REQUEST = 400;
+  static final int UNAUTHORIZED = 401;
+  static final int FORBIDDEN = 403;
+  static final int NOT_FOUND = 404;
+  static final int CONFLICT = 409;
+  static final int INTERNAL_SERVER_ERROR = 500;
 
-@Getter
-public non-sealed class UnAuthorizedException extends BaseException implements MsgIdException {
-  private final @Nullable Map<String, String> headers;
+  /** The public code of every technical exception. */
+  static final String INTERNAL_ERROR_CODE = "internalError";
 
-  public UnAuthorizedException(
-      final @Nullable String msgId, final @Nullable Map<String, String> headers) {
-    super(MsgIds.require(msgId), Statuses.UNAUTHORIZED, msgId);
-    this.headers = headers;
-  }
-
-  public UnAuthorizedException(final @Nullable String msgId) {
-    this(msgId, null);
-  }
+  private Statuses() {}
 }

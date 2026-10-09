@@ -15,8 +15,8 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-public class JsonParseException extends BaseException {
+public non-sealed class JsonParseException extends BaseException implements TechnicalException {
   public JsonParseException(final String message, final Throwable cause) {
-    super(message, cause);
+    super(message, cause, Statuses.INTERNAL_SERVER_ERROR, Statuses.INTERNAL_ERROR_CODE);
   }
 }

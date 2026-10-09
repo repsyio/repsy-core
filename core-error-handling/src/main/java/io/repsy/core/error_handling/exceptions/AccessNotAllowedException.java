@@ -17,8 +17,8 @@ package io.repsy.core.error_handling.exceptions;
 
 import org.jspecify.annotations.Nullable;
 
-public class AccessNotAllowedException extends BaseException {
+public non-sealed class AccessNotAllowedException extends BaseException implements MsgIdException {
   public AccessNotAllowedException(final @Nullable String msgId) {
-    super(MsgIds.require(msgId));
+    super(MsgIds.require(msgId), Statuses.FORBIDDEN, msgId);
   }
 }
