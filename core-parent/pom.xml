@@ -29,6 +29,8 @@
     <!-- Dependency Versions -->
     <bouncycastle.version>1.83</bouncycastle.version>
     <guava.version>33.5.0-jre</guava.version>
+    <!-- The version spring-core 7 depends on; declared here so the annotations are not transitive. -->
+    <jspecify.version>1.0.0</jspecify.version>
     <!--
       Overrides the 2.4.240 of the Spring Boot BOM (RPS-1676). The <h2.version> property alone does
       not work here: spring-boot-dependencies is imported below, and an import resolves its own
@@ -70,11 +72,17 @@
     <!-- Plugin Dependency Versions -->
     <checkstyle.version>14.3.0</checkstyle.version>
     <error-prone.version>2.50.0</error-prone.version>
+    <nullaway.version>0.14.2</nullaway.version>
     <spotbugs.version>4.10.4</spotbugs.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.jspecify</groupId>
+        <artifactId>jspecify</artifactId>
+        <version>${jspecify.version}</version>
+      </dependency>
       <!-- Declared before the imports: a direct entry wins over an imported one (see h2.version). -->
       <dependency>
         <groupId>com.h2database</groupId>
@@ -118,6 +126,11 @@
 
   <dependencies>
     <!-- Compile ########################################################### -->
+
+    <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -212,7 +225,12 @@
           <compilerArgs>
             <arg>-parameters</arg>
             <arg>-XDcompilePolicy=simple</arg>
-            <arg>-Xplugin:ErrorProne -Xep:UnicodeInCode:OFF -XepExcludedPaths:(.*/src/test/.*|.*/target/.*)</arg>
+            <!--
+              NullAway checks only code in a @NullMarked package (OnlyNullMarked), so the check grows with
+              the package-level @NullMarked rollout (RPS-2077). WARN for now; switch to ERROR when every
+              consumer is marked. A consumer that overrides compilerArgs must repeat these flags.
+            -->
+            <arg>-Xplugin:ErrorProne -Xep:UnicodeInCode:OFF -Xep:NullAway:WARN -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:JSpecifyMode=true -XepOpt:NullAway:TreatGeneratedAsUnannotated=true -XepExcludedPaths:(.*/src/test/.*|.*/target/.*)</arg>
             <arg>--should-stop=ifError=FLOW</arg>
           </compilerArgs>
           <annotationProcessorPaths>
@@ -220,6 +238,11 @@
               <groupId>com.google.errorprone</groupId>
               <artifactId>error_prone_core</artifactId>
               <version>${error-prone.version}</version>
+            </path>
+            <path>
+              <groupId>com.uber.nullaway</groupId>
+              <artifactId>nullaway</artifactId>
+              <version>${nullaway.version}</version>
             </path>
             <path>
               <groupId>org.projectlombok</groupId>
