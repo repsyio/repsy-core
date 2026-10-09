@@ -15,21 +15,16 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-import java.util.Map;
-import lombok.Getter;
-import org.jspecify.annotations.Nullable;
-
-@Getter
-public non-sealed class UnAuthorizedException extends BaseException implements MsgIdException {
-  private final @Nullable Map<String, String> headers;
-
-  public UnAuthorizedException(
-      final @Nullable String msgId, final @Nullable Map<String, String> headers) {
-    super(MsgIds.require(msgId), Statuses.UNAUTHORIZED, msgId);
-    this.headers = headers;
-  }
-
-  public UnAuthorizedException(final @Nullable String msgId) {
-    this(msgId, null);
-  }
-}
+/**
+ * Marker of the internal failures. The message is free text for logs and is never a response code:
+ * the public code is the fixed {@code internalError} and the status is 500.
+ */
+public sealed interface TechnicalException
+    permits CryptoException,
+        EventResponseException,
+        JsonParseException,
+        ErrorOccurredException,
+        ManifestListResolutionException,
+        ManifestParseException,
+        ManifestSerializationException,
+        SslContextInitializationException {}
