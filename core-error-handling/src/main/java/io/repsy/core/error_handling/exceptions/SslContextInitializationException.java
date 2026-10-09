@@ -15,7 +15,7 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-public class SslContextInitializationException extends BaseException {
+public non-sealed class SslContextInitializationException extends TechnicalException {
   public SslContextInitializationException(final String message, final Exception ex) {
     super(message, ex);
   }

@@ -17,12 +17,36 @@ package io.repsy.core.error_handling.exceptions;
 
 import org.jspecify.annotations.Nullable;
 
-class BaseException extends RuntimeException {
-  BaseException(final @Nullable String msgId) {
-    super(msgId);
+/**
+ * Root of the exceptions an {@code ErrorHandler} maps to a response. It is sealed into the two
+ * contracts: {@link MsgIdException} (a stable, client-visible code) and {@link TechnicalException}
+ * (an internal failure whose message is never exposed).
+ */
+public abstract sealed class BaseException extends RuntimeException
+    permits MsgIdException, TechnicalException {
+
+  BaseException(final @Nullable String message) {
+    super(message);
   }
 
   BaseException(final String message, final Throwable cause) {
     super(message, cause);
   }
+
+  /**
+   * The HTTP status the exception maps to, as a plain number so this module needs no Spring web
+   * dependency.
+   *
+   * @return the HTTP status code
+   */
+  public abstract int status();
+
+  /**
+   * The machine readable code that is safe to put in a response, or {@code null} when the exception
+   * carries none and the handler answers with its default for the type. Never derived from free
+   * text.
+   *
+   * @return the public code
+   */
+  public abstract @Nullable String publicCode();
 }

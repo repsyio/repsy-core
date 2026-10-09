@@ -15,7 +15,7 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-public class ManifestListResolutionException extends BaseException {
+public non-sealed class ManifestListResolutionException extends TechnicalException {
   public ManifestListResolutionException(final String message) {
     super(message);
   }

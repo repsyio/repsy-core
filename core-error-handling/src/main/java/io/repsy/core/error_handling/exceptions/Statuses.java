@@ -15,8 +15,14 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-public non-sealed class JsonParseException extends TechnicalException {
-  public JsonParseException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
+/** The HTTP status codes of the exceptions, as plain numbers (this module has no Spring web). */
+final class Statuses {
+  static final int BAD_REQUEST = 400;
+  static final int UNAUTHORIZED = 401;
+  static final int FORBIDDEN = 403;
+  static final int NOT_FOUND = 404;
+  static final int CONFLICT = 409;
+  static final int INTERNAL_SERVER_ERROR = 500;
+
+  private Statuses() {}
 }

@@ -27,6 +27,7 @@ import io.repsy.core.error_handling.exceptions.ItemAlreadyExistException;
 import io.repsy.core.error_handling.exceptions.ItemNotFoundException;
 import io.repsy.core.error_handling.exceptions.ManifestListResolutionException;
 import io.repsy.core.error_handling.exceptions.MfaException;
+import io.repsy.core.error_handling.exceptions.MsgIdException;
 import io.repsy.core.error_handling.exceptions.SignatureNotVerifiedException;
 import io.repsy.core.error_handling.exceptions.SubscriptionLimitReachedException;
 import io.repsy.core.error_handling.exceptions.UnAuthorizedException;
@@ -61,6 +62,20 @@ class MsgIdValidationTest {
         new Factory("UnAuthorizedException", UnAuthorizedException::new),
         new Factory(
             "UnAuthorizedException with headers", id -> new UnAuthorizedException(id, Map.of())));
+  }
+
+  @Test
+  void everyMsgIdExceptionIsCovered() {
+    final var covered =
+        msgIdExceptions()
+            .map(f -> f.name().replace(" with headers", ""))
+            .collect(java.util.stream.Collectors.toSet());
+    final var permitted =
+        java.util.Arrays.stream(MsgIdException.class.getPermittedSubclasses())
+            .map(Class::getSimpleName)
+            .collect(java.util.stream.Collectors.toSet());
+
+    assertEquals(permitted, covered, "A new MsgIdException must be added to msgIdExceptions()");
   }
 
   @ParameterizedTest

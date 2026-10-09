@@ -20,12 +20,12 @@ import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 
 @Getter
-public class UnAuthorizedException extends BaseException {
+public non-sealed class UnAuthorizedException extends MsgIdException {
   private final @Nullable Map<String, String> headers;
 
   public UnAuthorizedException(
       final @Nullable String msgId, final @Nullable Map<String, String> headers) {
-    super(MsgIds.require(msgId));
+    super(msgId, Statuses.UNAUTHORIZED);
     this.headers = headers;
   }
 

@@ -15,7 +15,7 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-public class CryptoException extends BaseException {
+public non-sealed class CryptoException extends TechnicalException {
   public CryptoException(final String message, final Throwable cause) {
     super(message, cause);
   }

@@ -15,7 +15,7 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-public class EventResponseException extends BaseException {
+public non-sealed class EventResponseException extends TechnicalException {
   public EventResponseException(final String message, final Exception ex) {
     super(message, ex);
   }

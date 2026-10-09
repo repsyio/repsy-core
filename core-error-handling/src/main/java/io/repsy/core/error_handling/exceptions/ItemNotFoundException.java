@@ -17,8 +17,8 @@ package io.repsy.core.error_handling.exceptions;
 
 import org.jspecify.annotations.Nullable;
 
-public class ItemNotFoundException extends BaseException {
+public non-sealed class ItemNotFoundException extends MsgIdException {
   public ItemNotFoundException(final @Nullable String msgId) {
-    super(MsgIds.require(msgId));
+    super(msgId, Statuses.NOT_FOUND);
   }
 }
