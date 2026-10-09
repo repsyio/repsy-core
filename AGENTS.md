@@ -64,6 +64,8 @@ check) but still runs the other checks. Before considering a change done, run a 
   package non-null by default. Only mark exceptions explicitly with `@Nullable`; don't add
   `@NonNull` — it's redundant under `@NullMarked` (see `core-response`, `core-ulid`,
   `core-error-handling`). Add a `package-info.java` with `@NullMarked` to any new package.
+  NullAway (Error Prone, JSpecify mode, `OnlyNullMarked`, currently WARN) checks every `@NullMarked`
+  package at compile time (RPS-2077); a module that overrides `compilerArgs` must repeat its flags.
 - New source files need the Apache 2.0 license header (see any existing file for the exact
   format) — the RAT plugin fails the build otherwise.
 - Follow `config/checkstyle.xml` for style rules; it's enforced at `verify`, not just advisory.
