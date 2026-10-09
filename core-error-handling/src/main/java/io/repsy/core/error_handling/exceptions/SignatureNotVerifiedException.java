@@ -17,8 +17,9 @@ package io.repsy.core.error_handling.exceptions;
 
 import org.jspecify.annotations.Nullable;
 
-public non-sealed class SignatureNotVerifiedException extends MsgIdException {
+public non-sealed class SignatureNotVerifiedException extends BaseException
+    implements MsgIdException {
   public SignatureNotVerifiedException(final @Nullable String msgId) {
-    super(msgId, Statuses.BAD_REQUEST);
+    super(MsgIds.require(msgId), Statuses.BAD_REQUEST, msgId);
   }
 }

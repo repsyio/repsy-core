@@ -15,8 +15,8 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-public non-sealed class ManifestParseException extends TechnicalException {
+public non-sealed class ManifestParseException extends BaseException implements TechnicalException {
   public ManifestParseException(final String message, final Throwable cause) {
-    super(message, cause);
+    super(message, cause, Statuses.INTERNAL_SERVER_ERROR, Statuses.INTERNAL_ERROR_CODE);
   }
 }

@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.repsy.core.error_handling.exceptions.BaseException;
+import io.repsy.core.error_handling.exceptions.ErrorOccurredException;
 import io.repsy.core.error_handling.exceptions.MsgIdException;
 import io.repsy.core.error_handling.exceptions.TechnicalException;
 import java.lang.reflect.Constructor;
@@ -57,30 +58,28 @@ class ExceptionHierarchyTest {
 
   private static BaseException instantiate(final Class<?> type)
       throws ReflectiveOperationException {
-    for (final Constructor<?> c : type.getConstructors()) {
-      final var args = new Object[c.getParameterCount()];
-      final var types = c.getParameterTypes();
-      for (var i = 0; i < args.length; i++) {
-        if (types[i] == String.class) {
-          args[i] = "Some free text, with a secret: 42";
-        } else if (types[i] == Exception.class) {
-          args[i] = new IllegalStateException("cause");
-        } else if (types[i] == Throwable.class) {
-          args[i] = new IllegalStateException("cause");
-        } else if (types[i] == Map.class) {
-          args[i] = null;
-        } else {
-          throw new AssertionError("Teach this test to build " + types[i] + " for " + type);
-        }
+    final Constructor<?> c = type.getConstructors()[0];
+    final var args = new Object[c.getParameterCount()];
+    final var types = c.getParameterTypes();
+    for (var i = 0; i < args.length; i++) {
+      if (types[i] == String.class) {
+        args[i] = "Some free text, with a secret: 42";
+      } else if (types[i] == Exception.class) {
+        args[i] = new IllegalStateException("cause");
+      } else if (types[i] == Throwable.class) {
+        args[i] = new IllegalStateException("cause");
+      } else if (types[i] == Map.class) {
+        args[i] = null;
+      } else {
+        throw new AssertionError("Teach this test to build " + types[i] + " for " + type);
       }
-      if (types.length > 0
-          && types[0] == String.class
-          && MsgIdException.class.isAssignableFrom(type)) {
-        args[0] = "someMsgId";
-      }
-      return (BaseException) c.newInstance(args);
     }
-    throw new AssertionError("No public constructor on " + type);
+    if (types.length > 0
+        && types[0] == String.class
+        && MsgIdException.class.isAssignableFrom(type)) {
+      args[0] = "someMsgId";
+    }
+    return (BaseException) c.newInstance(args);
   }
 
   @Test
@@ -117,13 +116,12 @@ class ExceptionHierarchyTest {
     for (final var type : types) {
       final var ex = instantiate(type);
       assertEquals(500, ex.status(), type.getSimpleName());
-      if (!"ErrorOccurredException".equals(type.getSimpleName())) {
+      if (!(ex instanceof ErrorOccurredException)) {
         // ErrorOccurredException's message is itself the fixed code, never caller text.
         assertNotEquals(ex.getMessage(), ex.publicCode(), type.getSimpleName());
       }
       assertTrue(
-          TechnicalException.PUBLIC_CODE.equals(ex.publicCode())
-              || "errorOccurred".equals(ex.publicCode()),
+          "internalError".equals(ex.publicCode()) || "errorOccurred".equals(ex.publicCode()),
           type.getSimpleName());
     }
   }

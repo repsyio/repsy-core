@@ -17,8 +17,9 @@ package io.repsy.core.error_handling.exceptions;
 
 import org.jspecify.annotations.Nullable;
 
-public non-sealed class SubscriptionLimitReachedException extends MsgIdException {
+public non-sealed class SubscriptionLimitReachedException extends BaseException
+    implements MsgIdException {
   public SubscriptionLimitReachedException(final @Nullable String msgId) {
-    super(msgId, Statuses.FORBIDDEN);
+    super(MsgIds.require(msgId), Statuses.FORBIDDEN, msgId);
   }
 }

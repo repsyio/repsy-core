@@ -15,13 +15,11 @@
  */
 package io.repsy.core.error_handling.exceptions;
 
-import org.jspecify.annotations.Nullable;
-
 /**
- * An exception that carries a bare msgId (see {@link MsgIds}), which is the stable, client-visible
+ * Marker of the exceptions that carry a bare msgId (see {@link MsgIds}), the stable, client-visible
  * code of the failure.
  */
-public abstract sealed class MsgIdException extends BaseException
+public sealed interface MsgIdException
     permits BadRequestException,
         UnAuthorizedException,
         AccessNotAllowedException,
@@ -30,22 +28,4 @@ public abstract sealed class MsgIdException extends BaseException
         SubscriptionLimitReachedException,
         MfaException,
         SignatureNotVerifiedException,
-        DataExportRequestException {
-
-  private final int status;
-
-  MsgIdException(final @Nullable String msgId, final int status) {
-    super(MsgIds.require(msgId));
-    this.status = status;
-  }
-
-  @Override
-  public int status() {
-    return this.status;
-  }
-
-  @Override
-  public @Nullable String publicCode() {
-    return getMessage();
-  }
-}
+        DataExportRequestException {}

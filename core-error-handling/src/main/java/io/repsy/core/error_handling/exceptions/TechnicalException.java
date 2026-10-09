@@ -16,10 +16,10 @@
 package io.repsy.core.error_handling.exceptions;
 
 /**
- * An internal failure. The message is free text for logs and is never a response code: {@link
- * #publicCode()} is a fixed value, and the status is 500.
+ * Marker of the internal failures. The message is free text for logs and is never a response code:
+ * the public code is the fixed {@code internalError} and the status is 500.
  */
-public abstract sealed class TechnicalException extends BaseException
+public sealed interface TechnicalException
     permits CryptoException,
         EventResponseException,
         JsonParseException,
@@ -27,26 +27,4 @@ public abstract sealed class TechnicalException extends BaseException
         ManifestListResolutionException,
         ManifestParseException,
         ManifestSerializationException,
-        SslContextInitializationException {
-
-  /** The code every technical exception exposes. */
-  public static final String PUBLIC_CODE = "internalError";
-
-  TechnicalException(final String message) {
-    super(message);
-  }
-
-  TechnicalException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
-  @Override
-  public int status() {
-    return Statuses.INTERNAL_SERVER_ERROR;
-  }
-
-  @Override
-  public String publicCode() {
-    return PUBLIC_CODE;
-  }
-}
+        SslContextInitializationException {}

@@ -17,8 +17,8 @@ package io.repsy.core.error_handling.exceptions;
 
 import org.jspecify.annotations.Nullable;
 
-public non-sealed class DataExportRequestException extends MsgIdException {
+public non-sealed class DataExportRequestException extends BaseException implements MsgIdException {
   public DataExportRequestException(final @Nullable String msgId) {
-    super(msgId, Statuses.BAD_REQUEST);
+    super(MsgIds.require(msgId), Statuses.BAD_REQUEST, msgId);
   }
 }

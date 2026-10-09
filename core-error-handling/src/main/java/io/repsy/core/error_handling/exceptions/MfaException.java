@@ -17,8 +17,8 @@ package io.repsy.core.error_handling.exceptions;
 
 import org.jspecify.annotations.Nullable;
 
-public non-sealed class MfaException extends MsgIdException {
+public non-sealed class MfaException extends BaseException implements MsgIdException {
   public MfaException(final @Nullable String msgId) {
-    super(msgId, Statuses.UNAUTHORIZED);
+    super(MsgIds.require(msgId), Statuses.UNAUTHORIZED, msgId);
   }
 }
