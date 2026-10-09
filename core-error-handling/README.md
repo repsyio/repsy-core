@@ -34,14 +34,15 @@ formatted sentence, a request path), because the error handler returns the messa
 it is. `null` is accepted and lets the handler fall back to its default id for the exception type.
 Log the variable details instead of putting them in the id.
 
-### `ErrorUtils` (`io.repsy.core.error_handling.utils`)
+### Request and exception reports
 
-A Lombok `@UtilityClass` with overloads of `exceptionToString(Throwable, HttpServletRequest)` that
-render a diagnostic report combining the request (path, method, query string, headers with the
-`Authorization` header redacted, and body) with the exception's stack trace and a randomly
-generated error code. Specialized overloads add extra context for
-`ConversionFailedException`, `HttpRequestMethodNotSupportedException`,
-`MethodArgumentNotValidException`, and `MissingServletRequestParameterException`.
+`ErrorUtils` moved to the `core-web-error` module (`RequestReport`, `ExceptionReport`), so this jar
+is pure JDK plus JSpecify and no longer pulls in spring-web, the servlet API or commons-lang3.
+`RequestReport.of(request, traceId)` reports the path, method, query parameter names and an
+allow-list of headers (every other header, such as `Authorization`, `Cookie`, `X-Api-Key`, `npm-otp`
+and `X-NuGet-ApiKey`, is masked), never reads the body, and carries the caller's trace id so the log
+entry matches the `errorCode` of the response. The `ErrorUtils` class remains in `core-web-error`,
+deprecated, delegating to them.
 
 ## Dependencies
 

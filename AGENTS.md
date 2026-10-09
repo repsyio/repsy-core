@@ -16,7 +16,8 @@ own `README.md` for details on what it does.
 | `core-parent` | Shared Maven configuration (Java version, quality-gate plugins, dependency versions) |
 | `core-bom` | Dependency-management BOM importing all publishable modules |
 | `core-event` | Shared Spring application events |
-| `core-error-handling` | Common exceptions and error-reporting utilities |
+| `core-error-handling` | Common exceptions (pure JDK plus JSpecify) |
+| `core-web-error` | `RequestReport` and `ExceptionReport` for logging web errors, deprecated `ErrorUtils` |
 | `core-response` | REST response envelope and factory |
 | `core-ulid` | ULID entity-id generation/conversion (Hibernate) |
 | `core-uuidv7` | UUIDv7 entity-id generation (Hibernate) |

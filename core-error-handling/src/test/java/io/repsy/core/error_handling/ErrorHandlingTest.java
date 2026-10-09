@@ -10,12 +10,7 @@
 package io.repsy.core.error_handling;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import io.repsy.core.error_handling.exceptions.AccessNotAllowedException;
 import io.repsy.core.error_handling.exceptions.BadRequestException;
@@ -37,20 +32,10 @@ import io.repsy.core.error_handling.exceptions.SignatureNotVerifiedException;
 import io.repsy.core.error_handling.exceptions.SslContextInitializationException;
 import io.repsy.core.error_handling.exceptions.SubscriptionLimitReachedException;
 import io.repsy.core.error_handling.exceptions.UnAuthorizedException;
-import io.repsy.core.error_handling.utils.ErrorUtils;
-import jakarta.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.convert.ConversionFailedException;
-import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 
 class ErrorHandlingTest {
   @Test
@@ -81,60 +66,6 @@ class ErrorHandlingTest {
     assertEquals("errorOccurred", new ErrorOccurredException(cause).getMessage());
     assertEquals("message", new ManifestListResolutionException("message").getMessage());
     assertEquals(cause, new ManifestListResolutionException("message", cause).getCause());
-  }
-
-  @Test
-  void errorUtilsFormatsRequestsAndSpecializedExceptions() throws Exception {
-    final var request = mock(HttpServletRequest.class);
-    when(request.getRequestURI()).thenReturn("/api/test");
-    when(request.getMethod()).thenReturn("POST");
-    when(request.getQueryString()).thenReturn("a=1");
-    when(request.getParameterNames())
-        .thenReturn(Collections.enumeration(Map.of("a", "1").keySet()));
-    when(request.getParameter("a")).thenReturn("1");
-    final var headerNames = new Vector<String>();
-    headerNames.add("Authorization");
-    headerNames.add("X-Trace");
-    when(request.getHeaderNames()).thenReturn(headerNames.elements());
-    when(request.getHeader("Authorization")).thenReturn("secret");
-    when(request.getHeader("X-Trace")).thenReturn("trace");
-    when(request.getReader()).thenReturn(new BufferedReader(new StringReader("body")));
-
-    final var generic = ErrorUtils.exceptionToString(new IllegalArgumentException("bad"), request);
-    assertTrue(generic.contains("/api/test"));
-    assertTrue(generic.contains("Authorization: *************"));
-    assertTrue(generic.contains("Content"));
-
-    final var conversion =
-        new ConversionFailedException(
-            TypeDescriptor.valueOf(String.class),
-            TypeDescriptor.valueOf(Integer.class),
-            "x",
-            new IllegalArgumentException());
-    assertTrue(ErrorUtils.exceptionToString(conversion, request).contains("Source Type"));
-    final var method = new HttpRequestMethodNotSupportedException("POST", List.of("GET"));
-    assertTrue(ErrorUtils.exceptionToString(method, request).contains("Supported HTTP Methods"));
-    final var missing = new MissingServletRequestParameterException("limit", "int");
-    assertTrue(
-        ErrorUtils.exceptionToString(missing, request).contains("Missing Parameter Name: limit"));
-    assertNotNull(ErrorUtils.exceptionToString(new IllegalArgumentException(), request));
-  }
-
-  @Test
-  void errorUtilsMasksAuthorizationHeaderRegardlessOfCase() throws Exception {
-    final var request = mock(HttpServletRequest.class);
-    when(request.getRequestURI()).thenReturn("/api/test");
-    when(request.getMethod()).thenReturn("POST");
-    final var headerNames = new Vector<String>();
-    headerNames.add("authorization");
-    when(request.getHeaderNames()).thenReturn(headerNames.elements());
-    when(request.getHeader("authorization")).thenReturn("secret");
-    when(request.getReader()).thenReturn(new BufferedReader(new StringReader("")));
-
-    final var result = ErrorUtils.exceptionToString(new IllegalArgumentException("bad"), request);
-
-    assertTrue(result.contains("authorization: *************"));
-    assertFalse(result.contains("secret"));
   }
 
   @Test
