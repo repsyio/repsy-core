@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/** Utilities for turning an exception and its originating HTTP request into a loggable string. */
+/** Deprecated entry point for turning an exception and its HTTP request into a loggable string. */
 @NullMarked
 package io.repsy.core.error_handling.utils;
 
