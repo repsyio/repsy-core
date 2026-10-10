@@ -28,11 +28,11 @@ import java.util.Set;
  * A loggable, secret-free snapshot of an HTTP request.
  *
  * <p>Only the path, the method, the names of the query parameters and the headers on an allow-list
- * are reported. Every other header is listed by name with a masked value, so {@code Authorization},
- * {@code Cookie}, {@code X-Api-Key}, {@code npm-otp}, {@code X-NuGet-ApiKey} and {@code
- * Proxy-Authorization} never reach a log. The request body is never read, and neither is a form
- * parameter value (that would consume the body), so an over-quota upload is not buffered into the
- * log.
+ * are reported (a {@code Referer} loses its query string and fragment). Every other header is
+ * listed by name with a masked value, so {@code Authorization}, {@code Cookie}, {@code X-Api-Key},
+ * {@code npm-otp}, {@code X-NuGet-ApiKey} and {@code Proxy-Authorization} never reach a log. The
+ * request body is never read, and neither is a form parameter value (that would consume the body),
+ * so an over-quota upload is not buffered into the log.
  *
  * <p>The trace id is supplied by the caller, so the log entry and the {@code errorCode} returned to
  * the client can carry the same value.
@@ -94,7 +94,9 @@ public record RequestReport(
       final var name = names.nextElement();
       headers.put(
           name,
-          ALLOWED_HEADERS.contains(name.toLowerCase(Locale.ROOT)) ? request.getHeader(name) : MASK);
+          ALLOWED_HEADERS.contains(name.toLowerCase(Locale.ROOT))
+              ? headerValue(name, request.getHeader(name))
+              : MASK);
     }
 
     return new RequestReport(
@@ -103,6 +105,20 @@ public record RequestReport(
         request.getRequestURI(),
         parameterNames(request.getQueryString()),
         headers);
+  }
+
+  /** Referer is the one allowed header that can carry a query string (and so a token). */
+  private static String headerValue(final String name, final String value) {
+
+    if (value == null || !"referer".equalsIgnoreCase(name)) {
+      return value;
+    }
+
+    final var cut = value.indexOf('?');
+    final var fragment = value.indexOf('#');
+    final var end = cut < 0 ? fragment : fragment < 0 ? cut : Math.min(cut, fragment);
+
+    return end < 0 ? value : value.substring(0, end);
   }
 
   private static List<String> parameterNames(final String queryString) {
