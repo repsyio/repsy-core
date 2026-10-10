@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.repsy.core</groupId>
+  <artifactId>core-build-parent</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <!--
+    The build parent of the repository's library modules (RPS-2054): Java and plugin versions, the
+    quality gates and the test dependencies, plus the few third-party versions the library modules
+    use. The third-party versions that only applications use live in core-dependencies, and
+    core-parent (kept for the applications that inherit it) joins the two.
+  -->
+
+  <properties>
+    <java.version>25</java.version>
+    <maven.compiler.release>25</maven.compiler.release>
+    <maven.min.version>3.9.7</maven.min.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!--
+      The shared Checkstyle config. Resolved from the directory Maven was started in, not from the
+      module, so it does not depend on how deep a module sits. A consumer whose root has no
+      config/checkstyle.xml sets this property (for example in .mvn/maven.config).
+    -->
+    <checkstyle.config.location>${maven.multiModuleProjectDirectory}/config/checkstyle.xml</checkstyle.config.location>
+    <!--
+      The phase of the 80% JaCoCo instruction-coverage gate (the check-coverage execution). A
+      consumer that does not meet the threshold yet sets it to "none" and opts back in per module.
+    -->
+    <jacoco.check.phase>verify</jacoco.check.phase>
+    <!--
+      Extra JVM arguments of every forked test JVM: Surefire (unit tests) and Failsafe (integration
+      tests, once a module binds it). Empty by default, so a consumer that does not set it gets the
+      JVM's defaults. A consumer sets this property (for example
+      "-XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=256m") instead of restating the plugins'
+      argLine, and can set it on the command line too (-Dtest.jvm.args=...).
+
+      Do not set the "argLine" property for this: Maven would freeze "${argLine}" in the plugin
+      configuration when it builds the model, before JaCoCo's prepare-agent has put its agent in
+      it, and the coverage would be lost without any error.
+    -->
+    <test.jvm.args></test.jvm.args>
+    <!-- Dependency Versions -->
+    <!-- The version spring-core 7 depends on; declared here so the annotations are not transitive. -->
+    <jspecify.version>1.0.0</jspecify.version>
+    <mapstruct.version>1.6.3</mapstruct.version>
+    <spring-boot.version>4.1.1</spring-boot.version>
+    <ulid-creator.version>5.2.4</ulid-creator.version>
+    <!-- Plugin Versions -->
+    <apache-rat-plugin.version>0.18</apache-rat-plugin.version>
+    <fmt-maven-plugin.version>2.29</fmt-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
+    <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+    <!--
+      The next three are the versions Maven 3.9.x already resolved for these plugins when the
+      <version> was missing (default lifecycle bindings for compiler and surefire, latest release
+      for enforcer); they are pinned here as-is, not upgraded.
+    -->
+    <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+    <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+    <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
+    <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
+    <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
+    <spring-boot-maven-plugin.version>${spring-boot.version}</spring-boot-maven-plugin.version>
+    <spotbugs-maven-plugin.version>4.10.4.1</spotbugs-maven-plugin.version>
+    <!-- Plugin Dependency Versions -->
+    <checkstyle.version>14.3.0</checkstyle.version>
+    <error-prone.version>2.50.0</error-prone.version>
+    <nullaway.version>0.14.2</nullaway.version>
+    <spotbugs.version>4.10.4</spotbugs.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.jspecify</groupId>
+        <artifactId>jspecify</artifactId>
+        <version>${jspecify.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!-- Compile ########################################################### -->
+
+    <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
+
+    <!-- Test ############################################################## -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!--
+          Failsafe is not bound here (no module of this repository has integration tests): a
+          consumer that runs *IT classes declares the plugin with its executions and inherits this
+          version and argLine (same as Surefire's below, so the JaCoCo agent covers them too).
+        -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${maven-failsafe-plugin.version}</version>
+          <configuration>
+            <argLine>${argLine} -Duser.timezone=UTC ${test.jvm.args}</argLine>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring-boot-maven-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>check-coverage</id>
+            <phase>${jacoco.check.phase}</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <rule>
+                  <element>BUNDLE</element>
+                  <limits>
+                    <limit>
+                      <counter>INSTRUCTION</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>0.80</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <release>${maven.compiler.release}</release>
+          <encoding>UTF-8</encoding>
+          <compilerArgs>
+            <arg>-parameters</arg>
+            <arg>-XDcompilePolicy=simple</arg>
+            <!--
+              NullAway checks only code in a @NullMarked package (OnlyNullMarked), so the check grows with
+              the package-level @NullMarked rollout (RPS-2077). WARN for now; switch to ERROR when every
+              consumer is marked. A consumer that overrides compilerArgs must repeat these flags.
+            -->
+            <arg>-Xplugin:ErrorProne -Xep:UnicodeInCode:OFF -Xep:NullAway:WARN -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:JSpecifyMode=true -XepOpt:NullAway:TreatGeneratedAsUnannotated=true -XepExcludedPaths:(.*/src/test/.*|.*/target/.*)</arg>
+            <arg>--should-stop=ifError=FLOW</arg>
+          </compilerArgs>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>com.google.errorprone</groupId>
+              <artifactId>error_prone_core</artifactId>
+              <version>${error-prone.version}</version>
+            </path>
+            <path>
+              <groupId>com.uber.nullaway</groupId>
+              <artifactId>nullaway</artifactId>
+              <version>${nullaway.version}</version>
+            </path>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </path>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${mapstruct.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>${maven-checkstyle-plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>${checkstyle.version}</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <failsOnError>true</failsOnError>
+          <consoleOutput>true</consoleOutput>
+          <configLocation>${checkstyle.config.location}</configLocation>
+          <includeTestSourceDirectory>false</includeTestSourceDirectory>
+          <excludes>**/module-info.java</excludes>
+          <excludeGeneratedSources>true</excludeGeneratedSources>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>${spotbugs-maven-plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs</artifactId>
+            <version>${spotbugs.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+      <plugin>
+        <groupId>com.spotify.fmt</groupId>
+        <artifactId>fmt-maven-plugin</artifactId>
+        <version>${fmt-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${maven-enforcer-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>enforce-versions-compile</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>${maven.min.version}</version>
+                </requireMavenVersion>
+                <!-- Java 25 is the current LTS; block accidental non-LTS major upgrades. -->
+                <requireJavaVersion>
+                  <version>[25,26)</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+          <argLine>${argLine} -Duser.timezone=UTC ${test.jvm.args}</argLine>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>${apache-rat-plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <!--
+            RAT 0.18 defaults these counters to a minimum of one. This
+            parent-only module has no scannable files after the exclusions,
+            so an empty result is valid here.
+          -->
+          <counterMins>
+            <counterMin>LICENSE_CATEGORIES:0</counterMin>
+            <counterMin>LICENSE_NAMES:0</counterMin>
+            <counterMin>Standards:0</counterMin>
+          </counterMins>
+          <excludes>
+            <!-- Build & IDE -->
+            <exclude>**/target/**</exclude>
+            <exclude>**/.mvn/**</exclude>
+            <exclude>**/.idea/**</exclude>
+            <exclude>**/*.iml</exclude>
+
+            <!-- Git -->
+            <exclude>.git/**</exclude>
+            <exclude>.github/**</exclude>
+            <exclude>.gitignore</exclude>
+            <exclude>**/*.gitmodules</exclude>
+
+            <!-- Config & Project files -->
+            <exclude>**/config/**</exclude>
+            <exclude>pom.xml</exclude>
+            <exclude>**/pom.xml</exclude>
+            <exclude>**/*.yml</exclude>
+            <exclude>**/*.yaml</exclude>
+            <exclude>**/*.json</exclude>
+            <exclude>**/*.properties</exclude>
+            <exclude>**/*.config</exclude>
+
+            <!-- Frontend -->
+            <exclude>**/*.html</exclude>
+            <exclude>**/*.css</exclude>
+            <exclude>**/*.js</exclude>
+            <exclude>**/*.lock</exclude>
+
+            <!-- Assets -->
+            <exclude>**/*.svg</exclude>
+            <exclude>**/*.png</exclude>
+            <exclude>**/*.jpg</exclude>
+
+            <!-- DB & Templates -->
+            <exclude>**/*.sql</exclude>
+            <exclude>**/*.ftl</exclude>
+
+            <!-- Docs -->
+            <exclude>**/*.md</exclude>
+            <exclude>**/*.txt</exclude>
+            <exclude>**/sitemap.xml</exclude>
+            <exclude>**/NOTICE</exclude>
+            <exclude>**/LICENSE</exclude>
+
+            <!-- Editor config -->
+            <exclude>**/*.prettierrc</exclude>
+            <exclude>**/.editorconfig</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -5,9 +5,9 @@
 
   <parent>
     <groupId>io.repsy.core</groupId>
-    <artifactId>core</artifactId>
+    <artifactId>core-build-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>../core-build-parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>core-response</artifactId>
