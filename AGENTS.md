@@ -16,7 +16,7 @@ own `README.md` for details on what it does.
 | `core-build-parent` | Maven parent of the library modules (Java version, quality-gate plugins, test dependencies) |
 | `core-dependencies` | Third-party versions only applications use (properties, Spring Cloud/Modulith/Testcontainers BOMs, H2) |
 | `core-parent` | Parent of the applications (`repsy`, `repsy-mono`): `core-build-parent` plus `core-dependencies`, no content of its own |
-| `core-bom` | Parent-less BOM listing all publishable modules |
+| `core-bom` | BOM listing all publishable modules (parent `core-build-parent`, so the root `mvn apache-rat:check` finds the RAT plugin on the first reactor project) |
 | `core-event` | Shared Spring application events |
 | `core-error-handling` | Common exceptions (pure JDK plus JSpecify) |
 | `core-web-error` | `RequestReport` and `ExceptionReport` for logging web errors, `ConstraintViolations`, `ProblemField`, deprecated `ErrorUtils` |

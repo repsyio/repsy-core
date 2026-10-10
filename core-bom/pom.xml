@@ -5,9 +5,20 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.repsy.core</groupId>
+  <!--
+    The parent is core-build-parent, not core-dependencies: importing this BOM then brings the
+    versions of the core modules (and the Spring Boot BOM the library modules build on), not the
+    application-only versions. It also keeps the build plugins (RAT) on the first project of the
+    reactor, which "mvn apache-rat:check" at the root resolves its plugin prefix from.
+  -->
+  <parent>
+    <groupId>io.repsy.core</groupId>
+    <artifactId>core-build-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../core-build-parent/pom.xml</relativePath>
+  </parent>
+
   <artifactId>core-bom</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
