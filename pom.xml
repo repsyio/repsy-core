@@ -27,6 +27,7 @@
     <module>core-parent</module>
     <module>core-error-handling</module>
     <module>core-web-error</module>
+    <module>core-web</module>
     <module>core-response</module>
     <module>core-ulid</module>
     <module>core-uuidv7</module>
