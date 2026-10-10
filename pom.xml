@@ -24,6 +24,8 @@
   <modules>
     <module>core-bom</module>
     <module>core-event</module>
+    <module>core-build-parent</module>
+    <module>core-dependencies</module>
     <module>core-parent</module>
     <module>core-error-handling</module>
     <module>core-web-error</module>

@@ -13,8 +13,10 @@ own `README.md` for details on what it does.
 
 | Module | Purpose |
 | --- | --- |
-| `core-parent` | Shared Maven configuration (Java version, quality-gate plugins, dependency versions) |
-| `core-bom` | Dependency-management BOM importing all publishable modules |
+| `core-build-parent` | Maven parent of the library modules (Java version, quality-gate plugins, test dependencies) |
+| `core-dependencies` | Third-party versions only applications use (properties, Spring Cloud/Modulith/Testcontainers BOMs, H2) |
+| `core-parent` | Parent of the applications (`repsy`, `repsy-mono`): `core-build-parent` plus `core-dependencies`, no content of its own |
+| `core-bom` | BOM listing all publishable modules (parent `core-build-parent`, so the root `mvn apache-rat:check` finds the RAT plugin on the first reactor project) |
 | `core-event` | Shared Spring application events |
 | `core-error-handling` | Common exceptions (pure JDK plus JSpecify) |
 | `core-web-error` | `RequestReport` and `ExceptionReport` for logging web errors, `ConstraintViolations`, `ProblemField`, deprecated `ErrorUtils` |
@@ -23,9 +25,15 @@ own `README.md` for details on what it does.
 | `core-ulid` | ULID entity-id generation/conversion (Hibernate) |
 | `core-uuidv7` | UUIDv7 entity-id generation (Hibernate) |
 
-`core-parent` is the Maven parent of every other module (the root `core` aggregator's parent is
-`core-parent` too). Module dependency direction is one-way: `core-bom` references the others, and
-the others don't depend on each other.
+`core-build-parent` is the Maven parent of every library module. The root `core` aggregator's
+parent is `core-parent` (the chain `core-parent` -> `core-dependencies` -> `core-build-parent`),
+because `repsy` uses `core` as its parent and `repsy-mono` uses `core-parent`; keep those
+coordinates and the version properties they reference (`bouncycastle.version`, `guava.version`,
+`java-jwt.version`, `totp.version`, `mapstruct.version`, `spring-boot.version`, ...) resolving.
+Module dependency direction is one-way: `core-bom` references the others, and the others don't
+depend on each other. Set `jacoco.check.phase` (default `verify`) to `none` to switch the
+coverage gate off in a consumer; `checkstyle.config.location` defaults to
+`${maven.multiModuleProjectDirectory}/config/checkstyle.xml`.
 
 ## Requirements
 
@@ -43,7 +51,7 @@ mvn verify
 `mvn verify` runs the full quality gate, not just tests:
 
 - JUnit tests (Surefire), UTC timezone forced
-- JaCoCo coverage check — **minimum 80% instruction coverage** per module (`core-parent`
+- JaCoCo coverage check — **minimum 80% instruction coverage** per module (`core-build-parent`
   `pom.xml`); a module failing this fails the build
 - Checkstyle (`config/checkstyle.xml`)
 - SpotBugs static analysis
@@ -60,7 +68,7 @@ check) but still runs the other checks. Before considering a change done, run a 
 
 - Format with `fmt-maven-plugin` (Google Java Format) — run `mvn com.spotify.fmt:fmt-maven-plugin:format`
   if `verify` reports formatting violations, rather than hand-formatting.
-- Lombok and MapStruct annotation processors are available in every module via `core-parent`.
+- Lombok and MapStruct annotation processors are available in every module via `core-build-parent`.
 - Nullability follows JSpecify's package-level convention: every leaf package has a
   `package-info.java` annotated `@org.jspecify.annotations.NullMarked`, making all types in that
   package non-null by default. Only mark exceptions explicitly with `@Nullable`; don't add
@@ -75,7 +83,7 @@ check) but still runs the other checks. Before considering a change done, run a 
 ## Testing
 
 - Each module with source has a `src/test/java` counterpart; tests use JUnit Jupiter and Mockito
-  (both provided by `core-parent`).
+  (both provided by `core-build-parent`).
 - Keep instruction coverage at or above 80% per module — this is a hard gate, not a suggestion.
 
 ## Merging to `main`
@@ -145,14 +153,14 @@ before you merge.
   change: Maven ignores `relativePath` when the parent version does not match.
 - Revisit publishing (repo.repsy.io first, Central only with a public consumer) when a consumer
   cannot use the submodule. The prerequisites are listed in RPS-1085: a checkout-independent
-  Checkstyle config location in `core-parent`, POM metadata (`name`, `description`, `url`,
+  Checkstyle config location in `core-build-parent`, POM metadata (`name`, `description`, `url`,
   `licenses`, `developers`) and source/javadoc/signing plugins for Central, and registry
   credentials as Actions secrets in this repository.
 
 ## Adding a new module
 
-1. Create the module directory with its own `pom.xml`, parented on `core-parent` (or on `core` if
-   it needs to be listed as a Maven submodule — see the existing modules for the pattern).
+1. Create the module directory with its own `pom.xml`, parented on `core-build-parent` (see the
+   existing modules for the pattern).
 2. Add it to `<modules>` in the root `pom.xml`.
 3. If other services should be able to depend on it via `core-bom`, add it to `core-bom`'s
    `dependencyManagement`.

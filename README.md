@@ -12,7 +12,9 @@ Shared Java libraries used across Repsy services. The project is organized as a 
 | `core-response` | REST response DTOs and response factories |
 | `core-ulid` | ULID generation, conversion, and Hibernate support |
 | `core-uuidv7` | UUIDv7 generation and Hibernate support |
-| `core-parent` | Shared Maven configuration and dependency versions |
+| `core-build-parent` | Maven parent of the library modules: Java and plugin versions, quality gates, test dependencies |
+| `core-dependencies` | Third-party versions the applications build on (properties and imported BOMs) |
+| `core-parent` | Parent of the applications: `core-build-parent` plus `core-dependencies` |
 
 ## Requirements
 

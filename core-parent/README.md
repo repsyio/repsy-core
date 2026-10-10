@@ -1,34 +1,6 @@
 # core-parent
 
-Shared Maven configuration for the Repsy Core multi-module build.
-
-## Purpose
-
-This is the top-level Maven parent for every `core-*` module (and the root `core` aggregator).
-It centralizes:
-
-- **Dependency versions** — third-party libraries (Spring Boot, Spring Cloud, Spring Modulith,
-  Jackson, Testcontainers, and various one-off libraries like Guava, Stripe, Mailjet, etc.) via
-  `dependencyManagement` and version properties.
-- **Compiler settings** — Java 25 source/target, Error Prone as a compiler plugin, and annotation
-  processors for Lombok and MapStruct.
-- **Quality gates**, enforced during `mvn verify`:
-  - `jacoco-maven-plugin` — test coverage report and an 80% instruction-coverage check
-  - `maven-checkstyle-plugin` — style checks against `../config/checkstyle.xml`
-  - `spotbugs-maven-plugin` — static analysis
-  - `fmt-maven-plugin` — Google Java Format check
-  - `maven-enforcer-plugin` — requires Maven >= 3.9.7 and Java 25
-  - `apache-rat-plugin` — license header check
-- **Baseline dependencies** — Lombok (compile), JUnit Jupiter and Mockito (test).
-
-## Properties a consumer can set
-
-| Property | Default | Meaning |
-| --- | --- | --- |
-| `test.jvm.args` | empty | Extra JVM arguments of every forked test JVM. It is appended to the `argLine` of Surefire (configured here) and of Failsafe (managed here; a consumer declares the plugin and its executions), after JaCoCo's agent and `-Duser.timezone=UTC`. Set it in the consumer's `<properties>` (for example `-XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=256m`) or with `-Dtest.jvm.args=...`. Do not set `argLine` itself for this: Maven would resolve `${argLine}` before JaCoCo's `prepare-agent` runs and the coverage would be lost silently. |
-
-## Usage
-
-Every other module in this repository declares `core-parent` as its Maven `<parent>`. You
-shouldn't normally need to depend on it directly from outside this repository — consume the
-individual `core-*` modules (optionally via `core-bom`) instead.
+The Maven parent of the Repsy applications: `core-build-parent` (build configuration, quality gates)
+joined with `core-dependencies` (third-party versions), with no content of its own. The library
+modules of this repository use `core-build-parent` instead. The name is kept because `repsy` (through
+the root `core` aggregator) and `repsy-mono` reference it.

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.repsy.core</groupId>
+    <artifactId>core-build-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../core-build-parent/pom.xml</relativePath>
+  </parent>
+
+  <artifactId>core-dependencies</artifactId>
+  <packaging>pom</packaging>
+
+  <!--
+    The third-party versions the applications build on (RPS-2054), on top of what core-build-parent
+    already manages (Spring Boot and the library modules' own dependencies): the version properties
+    an application references, and the Spring Cloud, Spring Modulith and Testcontainers BOMs and H2
+    imported into dependencyManagement. No module of this repository uses them, so they are
+    here and not in core-build-parent.
+
+    An application inherits this through core-parent. It can also import core-dependencies as a BOM
+    (type pom, scope import), which brings the managed versions but not the properties.
+  -->
+
+  <properties>
+    <!-- Not managed dependencies: applications reference these properties in their own entries. -->
+    <bouncycastle.version>1.83</bouncycastle.version>
+    <guava.version>33.5.0-jre</guava.version>
+    <java-jwt.version>4.5.0</java-jwt.version>
+    <totp.version>1.7.1</totp.version>
+    <spring-cloud.version>2025.1.3</spring-cloud.version>
+    <spring-modulith.version>2.1.1</spring-modulith.version>
+    <testcontainers-bom.version>2.0.5</testcontainers-bom.version>
+    <!--
+      Overrides the 2.4.240 of the Spring Boot BOM (RPS-1676). The <h2.version> property alone does
+      not work here: spring-boot-dependencies is imported by core-build-parent, and an import
+      resolves its own properties, so the explicit <dependencyManagement> entry for
+      com.h2database:h2 is what wins.
+      H2 2.4.240 keeps the session that prepared a CHECK (col IN (...)) constraint: once HikariCP
+      retires that connection (max-lifetime, 30 minutes by default) every insert and update of the
+      table fails with "The database has been closed". Fixed in H2 2.5.250:
+      https://github.com/h2database/h2database/issues/4308
+      https://github.com/h2database/h2database/issues/4320
+      https://github.com/h2database/h2database/issues/4342
+      Drop the entry once spring-boot.version manages H2 >= 2.5.250.
+    -->
+    <h2.version>2.5.252</h2.version>
+    <!-- Pure dependency management, no source to analyze or cover. -->
+    <sonar.skip>true</sonar.skip>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Declared before the imports: a direct entry wins over an imported one (see h2.version). -->
+      <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>${h2.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.modulith</groupId>
+        <artifactId>spring-modulith-bom</artifactId>
+        <version>${spring-modulith.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-bom</artifactId>
+        <version>${testcontainers-bom.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

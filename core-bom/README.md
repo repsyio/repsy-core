@@ -8,10 +8,16 @@ Importing this BOM in a consuming project's `dependencyManagement` pins the vers
 `io.repsy.core` modules to a single, consistent release, so downstream services don't have to
 track individual module versions themselves.
 
+The BOM's parent is `core-build-parent`: it manages the versions of the core modules (and the
+Spring Boot BOM the library modules build on), not the application-only versions of
+`core-dependencies`.
+
 Modules covered:
 
 - `core-event`
 - `core-error-handling`
+- `core-web-error`
+- `core-web`
 - `core-response`
 - `core-ulid`
 - `core-uuidv7`
