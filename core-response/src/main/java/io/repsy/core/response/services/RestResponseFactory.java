@@ -17,14 +17,12 @@ package io.repsy.core.response.services;
 
 import io.repsy.core.response.dtos.ResponseType;
 import io.repsy.core.response.dtos.RestResponse;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Component;
+import org.springframework.context.i18n.LocaleContextHolder;
 
-@Component
 public class RestResponseFactory {
   private final MessageSource messageSource;
 
@@ -70,7 +68,7 @@ public class RestResponseFactory {
 
     restResponse.setText(
         Objects.requireNonNull(
-            this.messageSource.getMessage(msgId, null, msgId, Locale.getDefault())));
+            this.messageSource.getMessage(msgId, null, msgId, LocaleContextHolder.getLocale())));
     restResponse.setData(data);
 
     return restResponse;

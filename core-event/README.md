@@ -8,19 +8,15 @@ This module defines a set of plain, serializable record types published via Spri
 `ApplicationEventPublisher` so that different Repsy services and modules can react to the same
 domain events without depending on each other's internal types.
 
-Events cover areas such as:
+Only events that more than one deployable shares live here:
 
-- **Account/tenant lifecycle** — `UserCreatedEvent`, `RegistrationCompletedEvent`,
-  `UsernameUpdatedEvent`, `EmailUpdatedEvent`, `TenantDeleteRequestedEvent`,
-  `TenantInactivityWarningEvent`
-- **Auth & security** — `UserLoginEvent`, `PasswordRecoveryRequestedEvent`,
-  `PasswordUpdatedEvent`, `EmailOtpRequestedEvent`, `EmailVerificationRequestedEvent`
-- **Artifact/repository activity** — `ArtifactPushedEvent`, `ArtifactVersionDeletedEvent`,
-  `ScanResultNotificationRequestedEvent`, `DeploymentScanResultNotificationRequestedEvent`,
-  `SeverityCounts`
-- **Notifications & comms** — `ContactRequestReceivedEvent`,
-  `DeploymentNotificationRequestedEvent`, `MailjetUnsubRequestedEvent`
-- **Storage & compliance** — `ClearStorageTrashRequestedEvent`, `GdprRequestedEvent`
+- **Artifact/repository activity** - `ArtifactPushedEvent`, `ArtifactVersionDeletedEvent`
+- **Account lifecycle** - `UserCreatedEvent`, `UserLoginEvent`
+- **Account mail (Repsy Cloud and imentis)** - `ContactRequestReceivedEvent`,
+  `EmailVerificationRequestedEvent`, `PasswordRecoveryRequestedEvent`
+
+Events that a single application owns (Cloud tenant, billing and notification events) live in that
+application, not here.
 
 Generic events (e.g. `UserCreatedEvent<T>`) implement `ResolvableTypeProvider` so Spring's event
 listener matching resolves the correct generic parameter at runtime.

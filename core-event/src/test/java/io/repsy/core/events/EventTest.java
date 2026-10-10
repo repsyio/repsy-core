@@ -11,7 +11,6 @@ package io.repsy.core.events;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.RecordComponent;
 import java.time.Instant;
@@ -30,23 +29,10 @@ class EventTest {
           "ArtifactPushedEvent",
           "ArtifactVersionDeletedEvent",
           "ContactRequestReceivedEvent",
-          "DeploymentNotificationRequestedEvent",
-          "DeploymentScanResultNotificationRequestedEvent",
-          "EmailOtpRequestedEvent",
-          "EmailUpdatedEvent",
           "EmailVerificationRequestedEvent",
-          "GdprRequestedEvent",
-          "MailjetUnsubRequestedEvent",
           "PasswordRecoveryRequestedEvent",
-          "PasswordUpdatedEvent",
-          "RegistrationCompletedEvent",
-          "ScanResultNotificationRequestedEvent",
-          "SeverityCounts",
-          "TenantDeleteRequestedEvent",
-          "TenantInactivityWarningEvent",
           "UserCreatedEvent",
-          "UserLoginEvent",
-          "UsernameUpdatedEvent"
+          "UserLoginEvent"
         };
 
     for (final var eventType : eventTypes) {
@@ -81,27 +67,8 @@ class EventTest {
     assertEquals(42L, contact.templateId());
     assertEquals(variables, contact.variables());
 
-    final var registration =
-        RegistrationCompletedEvent.builder()
-            .username("ada")
-            .hash(null)
-            .salt("salt")
-            .tenantUuid(UUID_VALUE)
-            .fullName("Ada Lovelace")
-            .email("ada@example.test")
-            .verificationCode("code")
-            .build();
-    assertEquals("ada", registration.username());
-    assertEquals(UUID_VALUE, registration.tenantUuid());
-
     final var userCreated = new UserCreatedEvent<>(UUID_VALUE, "ada");
     assertEquals(UUID.class, userCreated.getResolvableType().getGeneric(0).resolve());
-  }
-
-  @Test
-  void emptyEventIsConstructible() {
-    assertNotNull(new ClearStorageTrashRequestedEvent());
-    assertTrue(ClearStorageTrashRequestedEvent.class.getDeclaredConstructors().length > 0);
   }
 
   private static Object valueFor(final RecordComponent component) {
@@ -114,9 +81,6 @@ class EventTest {
     }
     if (type == Instant.class) {
       return INSTANT_VALUE;
-    }
-    if (type == SeverityCounts.class) {
-      return new SeverityCounts("1", "2", "3", "4", "5");
     }
     if (type == Map.class) {
       return Map.of("key", "value");

@@ -47,8 +47,6 @@
       Drop the entry once spring-boot.version manages H2 >= 2.5.250.
     -->
     <h2.version>2.5.252</h2.version>
-    <!-- Pure dependency management, no source to analyze or cover. -->
-    <sonar.skip>true</sonar.skip>
   </properties>
 
   <dependencyManagement>

@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.repsy.core.events;
 
-public record PasswordUpdatedEvent(String username, String hash, String salt) {}
+/** Spring Boot auto-configuration of core-response. */
+@NullMarked
+package io.repsy.core.response.configs;
+
+import org.jspecify.annotations.NullMarked;
