@@ -197,7 +197,7 @@ class ExceptionReportTest {
   }
 
   @Test
-  void refererQueryStringAndFragmentAreStripped() {
+  void refererIsReducedToItsOrigin() {
     final var out =
         report(
                 Map.of(
@@ -210,7 +210,7 @@ class ExceptionReportTest {
 
     assertThat(out)
         .doesNotContain(SECRET)
-        .contains("Referer: https://repsy.io/reset\n")
+        .contains("Referer: https://repsy.io\n")
         .contains("Origin: https://repsy.io")
         .contains("Query Parameters: " + List.of("token"));
   }
