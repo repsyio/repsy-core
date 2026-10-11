@@ -135,4 +135,111 @@ class RequestReportTest {
     assertFalse(text.contains("s3cret"));
     verify(request, never()).getReader();
   }
+
+  @Test
+  void refererUserinfoAndQueryNeverReachTheReport() throws Exception {
+    final var report =
+        RequestReport.of(
+                request(Map.of("Referer", "https://user:pw@host/p?token=abc#frag"), null), "t1")
+            .toString();
+
+    assertTrue(report.contains("Referer: https://host\n"));
+    assertFalse(report.contains("user"));
+    assertFalse(report.contains("pw"));
+    assertFalse(report.contains("token"));
+    assertFalse(report.contains("abc"));
+  }
+
+  @Test
+  void malformedUserinfoWithAtSignDoesNotLeak() throws Exception {
+    final var report =
+        RequestReport.of(request(Map.of("Referer", "https://u:p@ss@host/"), null), "t1").toString();
+
+    assertTrue(report.contains("Referer: https://host\n"));
+    assertFalse(report.contains("ss"));
+  }
+
+  @Test
+  void plainRefererStaysUseful() throws Exception {
+    final var report =
+        RequestReport.of(
+                request(
+                    Map.of(
+                        "Referer", "HTTPS://Example.com:8443/docs/page",
+                        "Origin", "http://localhost:4200",
+                        "X-Forwarded-Host", "repo.repsy.io, [::1]:80"),
+                    null),
+                "t1")
+            .toString();
+
+    assertTrue(report.contains("Referer: https://Example.com:8443\n"));
+    assertTrue(report.contains("Origin: http://localhost:4200\n"));
+    assertTrue(report.contains("X-Forwarded-Host: repo.repsy.io, [::1]:80\n"));
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "secret-token",
+        "https://",
+        "https://:8080/",
+        "https://u:p/x@host",
+        "https://ho st/",
+        "https://host:80a/",
+        "https://host:123456/",
+        "https://[::1/",
+        "https://[zz]/",
+        "https://[]/",
+        "1http://host/",
+        "ht tp://host/",
+        "https://host%2e/",
+        "https://ho\r\nst/"
+      })
+  void unparsableRefererFailsClosed(final String value) throws Exception {
+    final var report = RequestReport.of(request(Map.of("Referer", value), null), "t1").toString();
+
+    assertTrue(report.contains("Referer: " + LogSanitizer.REDACTED + "\n"), value);
+  }
+
+  @Test
+  void oversizedAndNullOriginsAreHandled() throws Exception {
+    final var long1 = "https://" + "a".repeat(3000);
+    final var report =
+        RequestReport.of(request(Map.of("Origin", "null", "Referer", long1), null), "t1")
+            .toString();
+
+    assertTrue(report.contains("Origin: null\n"));
+    assertTrue(report.contains("Referer: ***\n"));
+    assertEquals("***", LogSanitizer.forwardedHost("a".repeat(3000)));
+    assertEquals("***", LogSanitizer.forwardedHost("a,b,c,d,e,f,g,h,i"));
+    assertEquals("***", LogSanitizer.forwardedHost("evil.com/path?token=1"));
+    assertEquals("***", LogSanitizer.origin("https://" + "a".repeat(300) + "/"));
+  }
+
+  @Test
+  void controlCharactersInAllowedHeadersAreEscaped() throws Exception {
+    final var report =
+        RequestReport.of(request(Map.of("User-Agent", "curl\r\nFake: line\u007f"), null), "t1")
+            .toString();
+
+    assertTrue(report.contains("User-Agent: curl\\u000d\\u000aFake: line\\u007f\n"));
+    assertEquals(2048, LogSanitizer.escape("a".repeat(5000)).length());
+  }
+
+  @Test
+  void nonSimpleParameterNamesAreRedacted() throws Exception {
+    final var report =
+        RequestReport.of(
+            request(
+                Map.of(),
+                "page&filter[name]=x&a.b-c_d=1&sk_live%5Fabc&"
+                    + "x".repeat(65)
+                    + "=1&k%0d%0aEvil&bad name"),
+            "t1");
+
+    assertEquals(
+        List.of("page", "filter[name]", "a.b-c_d", "***", "***", "***", "***"),
+        report.parameterNames());
+    assertFalse(report.toString().contains("sk_live"));
+  }
 }
