@@ -17,6 +17,7 @@ package io.repsy.core.web_error;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Makes client-controlled text safe to log: URL-bearing header values are reduced to {@code
@@ -184,7 +185,7 @@ final class LogSanitizer {
   }
 
   /** Returns {@code host[:port]} when it is a plain host, otherwise {@code null}. */
-  private static String hostAndPort(final String authority) {
+  private static @Nullable String hostAndPort(final String authority) {
 
     final var end = hostEnd(authority);
 

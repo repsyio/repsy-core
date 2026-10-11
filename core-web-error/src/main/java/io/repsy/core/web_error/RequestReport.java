@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A loggable, secret-free snapshot of an HTTP request.
@@ -105,7 +106,7 @@ public record RequestReport(
         headers);
   }
 
-  private static String headerValue(final String name, final String value) {
+  private static String headerValue(final String name, final @Nullable String value) {
 
     final var key = name.toLowerCase(Locale.ROOT);
 
