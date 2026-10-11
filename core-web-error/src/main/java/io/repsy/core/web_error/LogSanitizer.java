@@ -59,7 +59,13 @@ final class LogSanitizer {
       return REDACTED;
     }
 
-    final var authority = authority(text, separator + 3);
+    final var start = separator + 3;
+    final var authority = authority(text, start);
+
+    if (text.indexOf('@', start + authority.length()) >= 0) {
+      return REDACTED;
+    }
+
     final var host = hostAndPort(authority.substring(authority.lastIndexOf('@') + 1));
 
     if (host == null) {
