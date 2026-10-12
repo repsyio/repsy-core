@@ -30,7 +30,7 @@ public class RestResponseFactory {
     return this.createResponse(ResponseType.ERROR, msgId);
   }
 
-  public <T> RestResponse<T> error(final String msgId, final T data) {
+  public <T> RestResponse<T> error(final String msgId, final @Nullable T data) {
     return this.createResponse(ResponseType.ERROR, msgId, data);
   }
 
@@ -38,7 +38,7 @@ public class RestResponseFactory {
     return this.createResponse(ResponseType.SUCCESS, msgId);
   }
 
-  public <T> RestResponse<T> success(final String msgId, final T data) {
+  public <T> RestResponse<T> success(final String msgId, final @Nullable T data) {
     return this.createResponse(ResponseType.SUCCESS, msgId, data);
   }
 
