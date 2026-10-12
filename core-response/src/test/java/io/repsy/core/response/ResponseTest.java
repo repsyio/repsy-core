@@ -82,4 +82,19 @@ class ResponseTest {
     assertNull(warningWithoutData.getData());
     assertEquals(Locale.getDefault(), Locale.getDefault());
   }
+
+  @Test
+  void errorAndSuccessAcceptNullData() {
+    final var factory = new RestResponseFactory(messages);
+    final var error = factory.<String>error("bad", null);
+    final var success = factory.<String>success("ok", null);
+
+    assertEquals(ResponseType.ERROR, error.getType());
+    assertNotNull(error.getErrorCode());
+    assertEquals("translated:bad", error.getText());
+    assertNull(error.getData());
+    assertEquals(ResponseType.SUCCESS, success.getType());
+    assertEquals("translated:ok", success.getText());
+    assertNull(success.getData());
+  }
 }
