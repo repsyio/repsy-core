@@ -193,11 +193,11 @@
             <arg>-parameters</arg>
             <arg>-XDcompilePolicy=simple</arg>
             <!--
-              NullAway checks only code in a @NullMarked package (OnlyNullMarked), so the check grows with
-              the package-level @NullMarked rollout (RPS-2077). WARN for now; switch to ERROR when every
-              consumer is marked. A consumer that overrides compilerArgs must repeat these flags.
+              NullAway checks only code in a @NullMarked package (OnlyNullMarked); every main package is
+              marked (RPS-2077, enforced by Checkstyle), and a NullAway finding fails the build (RPS-2151).
+              A consumer that overrides compilerArgs must repeat these flags.
             -->
-            <arg>-Xplugin:ErrorProne -Xep:UnicodeInCode:OFF -Xep:NullAway:WARN -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:JSpecifyMode=true -XepOpt:NullAway:TreatGeneratedAsUnannotated=true -XepExcludedPaths:(.*/src/test/.*|.*/target/.*)</arg>
+            <arg>-Xplugin:ErrorProne -Xep:UnicodeInCode:OFF -Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:JSpecifyMode=true -XepOpt:NullAway:TreatGeneratedAsUnannotated=true -XepExcludedPaths:(.*/src/test/.*|.*/target/.*)</arg>
             <arg>--should-stop=ifError=FLOW</arg>
           </compilerArgs>
           <annotationProcessorPaths>

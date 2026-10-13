@@ -15,7 +15,25 @@
 
   <module name="SuppressWarningsFilter"/>
 
+  <!--
+    RPS-2151: every main package with types has a package-info.java (JavadocPackage), and every
+    package-info.java is @NullMarked (the Regexp with id nullMarkedPackageInfo, suppressed for all
+    other files). Test sources and generated sources are not checked (maven-checkstyle-plugin
+    includeTestSourceDirectory=false, excludeGeneratedSources=true).
+  -->
+  <module name="JavadocPackage"/>
+  <module name="SuppressionSingleFilter">
+    <property name="id" value="nullMarkedPackageInfo"/>
+    <property name="files" value="(?&lt;![\\/]package-info\.java)$"/>
+  </module>
+
   <module name="TreeWalker">
+    <module name="Regexp">
+      <property name="id" value="nullMarkedPackageInfo"/>
+      <property name="format" value="^@(org\.jspecify\.annotations\.)?NullMarked\b"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="package-info.java must annotate the package with @org.jspecify.annotations.NullMarked (RPS-2077)"/>
+    </module>
     <module name="Regexp">
       <property name="format" value="org\.jetbrains\.annotations\.NotNull"/>
       <property name="illegalPattern" value="true"/>
