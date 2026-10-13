@@ -17,7 +17,6 @@ package io.repsy.core.web.paging;
 
 import java.util.Comparator;
 import java.util.List;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -47,7 +46,7 @@ public final class VersionSortPaging {
    * sort by).
    */
   public static Sort.@Nullable Direction directionFor(
-      final @NonNull Pageable pageable, final @NonNull String property) {
+      final Pageable pageable, final String property) {
 
     final var order = pageable.getSort().getOrderFor(property);
 
@@ -58,11 +57,11 @@ public final class VersionSortPaging {
    * Orders the whole unpaged {@code items} by {@code comparator} and slices out the page {@code
    * pageable} asked for.
    */
-  public static <T> @NonNull Page<T> sortAndPage(
-      final @NonNull List<T> items,
-      final @NonNull Pageable pageable,
-      final Sort.@NonNull Direction direction,
-      final @NonNull Comparator<T> comparator) {
+  public static <T> Page<T> sortAndPage(
+      final List<T> items,
+      final Pageable pageable,
+      final Sort.Direction direction,
+      final Comparator<T> comparator) {
 
     final var ordered = direction.isDescending() ? comparator.reversed() : comparator;
 

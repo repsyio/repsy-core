@@ -16,8 +16,8 @@
 package io.repsy.core.web.paging;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,7 +32,7 @@ import org.springframework.data.domain.Sort;
  */
 public final class SortValidator {
 
-  private static final @NonNull String SORT_PARAMETER = "sort";
+  private static final String SORT_PARAMETER = "sort";
 
   private SortValidator() {
     throw new UnsupportedOperationException("Utility class");
@@ -45,8 +45,7 @@ public final class SortValidator {
    * @param allowed Properties the endpoint can sort by
    * @throws InvalidPagingParameterException when any sort property is not allowed
    */
-  public static void requireSortableBy(
-      final @NonNull Pageable pageable, final @NonNull Set<String> allowed) {
+  public static void requireSortableBy(final Pageable pageable, final Set<String> allowed) {
 
     final var supported =
         pageable.getSort().stream().map(Sort.Order::getProperty).allMatch(allowed::contains);
@@ -68,15 +67,18 @@ public final class SortValidator {
    * @return The same page and size, sorted by the mapped paths in the requested directions
    * @throws InvalidPagingParameterException when any sort key is not a key of {@code sortPaths}
    */
-  public static @NonNull Pageable resolveSortPaths(
-      final @NonNull Pageable pageable, final @NonNull Map<String, String> sortPaths) {
+  public static Pageable resolveSortPaths(
+      final Pageable pageable, final Map<String, String> sortPaths) {
 
     requireSortableBy(pageable, sortPaths.keySet());
 
     final var sort =
         Sort.by(
             pageable.getSort().stream()
-                .map(order -> order.withProperty(sortPaths.get(order.getProperty())))
+                .map(
+                    order ->
+                        order.withProperty(
+                            Objects.requireNonNull(sortPaths.get(order.getProperty()))))
                 .toList());
 
     return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);

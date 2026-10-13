@@ -17,7 +17,6 @@ package io.repsy.core.web.http;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.experimental.UtilityClass;
-import org.jspecify.annotations.NullMarked;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 
@@ -26,7 +25,6 @@ import org.springframework.http.HttpHeaders;
  * cache keeps a copy of it (API guideline, "Headers and caching").
  */
 @UtilityClass
-@NullMarked
 public final class NoStore {
 
   /**

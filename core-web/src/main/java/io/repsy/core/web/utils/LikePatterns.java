@@ -16,7 +16,6 @@
 package io.repsy.core.web.utils;
 
 import java.util.Locale;
-import org.jspecify.annotations.NonNull;
 
 /** Builds {@code LIKE} patterns from text a caller typed. */
 public final class LikePatterns {
@@ -35,8 +34,7 @@ public final class LikePatterns {
    * @param query What the caller typed
    * @param suffix Pattern text put after the query, such as {@code %}
    */
-  public static @NonNull String of(
-      final @NonNull String prefix, final @NonNull String query, final @NonNull String suffix) {
+  public static String of(final String prefix, final String query, final String suffix) {
 
     final var escaped =
         query

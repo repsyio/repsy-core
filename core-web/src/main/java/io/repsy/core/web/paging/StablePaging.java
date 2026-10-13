@@ -16,7 +16,6 @@
 package io.repsy.core.web.paging;
 
 import java.util.ArrayList;
-import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -36,7 +35,7 @@ import org.springframework.data.domain.Sort;
 public final class StablePaging {
 
   /** The property every entity of the application keeps its primary key in. */
-  static final @NonNull String TIE_BREAKER_PROPERTY = "id";
+  static final String TIE_BREAKER_PROPERTY = "id";
 
   private StablePaging() {
     throw new UnsupportedOperationException("Utility class");
@@ -51,7 +50,7 @@ public final class StablePaging {
    * @param pageable The paging a query was asked for
    * @return The same page and size, with an order that no two rows share a position in
    */
-  public static @NonNull Pageable withTieBreaker(final @NonNull Pageable pageable) {
+  public static Pageable withTieBreaker(final Pageable pageable) {
     if (pageable.isUnpaged() || sortsByTieBreaker(pageable.getSort())) {
       return pageable;
     }
@@ -69,7 +68,7 @@ public final class StablePaging {
     };
   }
 
-  private static boolean sortsByTieBreaker(final @NonNull Sort sort) {
+  private static boolean sortsByTieBreaker(final Sort sort) {
     return sort.stream().anyMatch(order -> TIE_BREAKER_PROPERTY.equals(order.getProperty()));
   }
 }

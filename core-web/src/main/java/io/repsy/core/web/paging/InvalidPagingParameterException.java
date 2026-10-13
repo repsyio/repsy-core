@@ -17,7 +17,6 @@ package io.repsy.core.web.paging;
 
 import java.io.Serial;
 import lombok.Getter;
-import org.jspecify.annotations.NonNull;
 
 /**
  * Thrown when a paged request carries a {@code page}, {@code size} or {@code sort} that is not
@@ -29,9 +28,9 @@ public class InvalidPagingParameterException extends RuntimeException {
   @Serial private static final long serialVersionUID = 1L;
 
   /** Names of the offending request parameters, comma separated. */
-  private final @NonNull String parameterNames;
+  private final String parameterNames;
 
-  public InvalidPagingParameterException(final @NonNull String parameterNames) {
+  public InvalidPagingParameterException(final String parameterNames) {
     super("Invalid paging parameter: " + parameterNames);
     this.parameterNames = parameterNames;
   }

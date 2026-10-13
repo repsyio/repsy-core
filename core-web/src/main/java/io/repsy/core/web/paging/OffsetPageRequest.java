@@ -15,7 +15,6 @@
  */
 package io.repsy.core.web.paging;
 
-import org.jspecify.annotations.NullMarked;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -32,7 +31,6 @@ import org.springframework.data.domain.Sort;
  * @param pageSize the number of rows to return, at least 1
  * @param sort the sort to apply
  */
-@NullMarked
 public record OffsetPageRequest(long offset, int pageSize, Sort sort) implements Pageable {
 
   public OffsetPageRequest {

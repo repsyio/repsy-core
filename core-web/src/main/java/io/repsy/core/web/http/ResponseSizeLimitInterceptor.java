@@ -18,7 +18,6 @@ package io.repsy.core.web.http;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatusCode;
@@ -42,10 +41,8 @@ public final class ResponseSizeLimitInterceptor implements ClientHttpRequestInte
   }
 
   @Override
-  public @NonNull ClientHttpResponse intercept(
-      final @NonNull HttpRequest request,
-      final byte @NonNull [] body,
-      final @NonNull ClientHttpRequestExecution execution)
+  public ClientHttpResponse intercept(
+      final HttpRequest request, final byte[] body, final ClientHttpRequestExecution execution)
       throws IOException {
 
     final var response = execution.execute(request, body);
@@ -65,26 +62,26 @@ public final class ResponseSizeLimitInterceptor implements ClientHttpRequestInte
     return new LimitedResponse(response, this.maxBytes);
   }
 
-  private record LimitedResponse(@NonNull ClientHttpResponse delegate, long maxBytes)
+  private record LimitedResponse(ClientHttpResponse delegate, long maxBytes)
       implements ClientHttpResponse {
 
     @Override
-    public @NonNull HttpStatusCode getStatusCode() throws IOException {
+    public HttpStatusCode getStatusCode() throws IOException {
       return this.delegate.getStatusCode();
     }
 
     @Override
-    public @NonNull String getStatusText() throws IOException {
+    public String getStatusText() throws IOException {
       return this.delegate.getStatusText();
     }
 
     @Override
-    public @NonNull HttpHeaders getHeaders() {
+    public HttpHeaders getHeaders() {
       return this.delegate.getHeaders();
     }
 
     @Override
-    public @NonNull InputStream getBody() throws IOException {
+    public InputStream getBody() throws IOException {
       return new LimitedStream(this.delegate.getBody(), this.maxBytes);
     }
 
@@ -99,7 +96,7 @@ public final class ResponseSizeLimitInterceptor implements ClientHttpRequestInte
     private final long maxBytes;
     private long read;
 
-    LimitedStream(final @NonNull InputStream in, final long maxBytes) {
+    LimitedStream(final InputStream in, final long maxBytes) {
       super(in);
       this.maxBytes = maxBytes;
     }
@@ -116,8 +113,7 @@ public final class ResponseSizeLimitInterceptor implements ClientHttpRequestInte
     }
 
     @Override
-    public int read(final byte @NonNull [] buffer, final int offset, final int length)
-        throws IOException {
+    public int read(final byte[] buffer, final int offset, final int length) throws IOException {
       final var count = super.read(buffer, offset, length);
 
       if (count > 0) {
