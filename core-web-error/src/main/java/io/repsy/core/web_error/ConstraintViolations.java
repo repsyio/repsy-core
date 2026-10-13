@@ -18,7 +18,6 @@ package io.repsy.core.web_error;
 import java.sql.SQLException;
 import java.util.Locale;
 import lombok.experimental.UtilityClass;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -31,7 +30,6 @@ import org.springframework.dao.DataIntegrityViolationException;
  * violation raised by the database itself. Any other cause carries no SQL state.
  */
 @UtilityClass
-@NullMarked
 public final class ConstraintViolations {
 
   /** SQL state of a value longer than its column. */

@@ -15,7 +15,6 @@
  */
 package io.repsy.core.web.configs;
 
-import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import tools.jackson.databind.MapperFeature;
@@ -43,7 +42,7 @@ import tools.jackson.dataformat.xml.XmlWriteFeature;
 public class XmlMapperConfig {
 
   @Bean
-  public @NonNull XmlMapper xmlMapper() {
+  public XmlMapper xmlMapper() {
 
     return XmlMapper.builder()
         .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)

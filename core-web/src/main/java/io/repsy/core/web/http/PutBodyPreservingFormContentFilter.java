@@ -16,7 +16,6 @@
 package io.repsy.core.web.http;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.jspecify.annotations.NonNull;
 import org.springframework.boot.servlet.filter.OrderedFormContentFilter;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
@@ -42,7 +41,7 @@ import org.springframework.stereotype.Component;
 public class PutBodyPreservingFormContentFilter extends OrderedFormContentFilter {
 
   @Override
-  protected boolean shouldNotFilter(final @NonNull HttpServletRequest request) {
+  protected boolean shouldNotFilter(final HttpServletRequest request) {
 
     final var method = request.getMethod();
 

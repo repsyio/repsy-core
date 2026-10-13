@@ -17,7 +17,6 @@ package io.repsy.core.web.http;
 
 import java.net.URI;
 import lombok.experimental.UtilityClass;
-import org.jspecify.annotations.NullMarked;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +28,6 @@ import tools.jackson.databind.json.JsonMapper;
  * status resource for work that finishes later.
  */
 @UtilityClass
-@NullMarked
 public final class ResponseEntities {
 
   private static final JsonMapper JSON = JsonMapper.builder().build();

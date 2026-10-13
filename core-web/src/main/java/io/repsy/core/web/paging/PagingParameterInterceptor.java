@@ -20,7 +20,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -46,14 +45,12 @@ public final class PagingParameterInterceptor implements HandlerInterceptor {
 
   static final int MAX_PAGE_SIZE = 100;
 
-  private static final @NonNull String PAGE_PARAMETER = "page";
-  private static final @NonNull String SIZE_PARAMETER = "size";
+  private static final String PAGE_PARAMETER = "page";
+  private static final String SIZE_PARAMETER = "size";
 
   @Override
   public boolean preHandle(
-      final @NonNull HttpServletRequest request,
-      final @NonNull HttpServletResponse response,
-      final @NonNull Object handler) {
+      final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
 
     if (!(handler instanceof final HandlerMethod handlerMethod) || !takesPageable(handlerMethod)) {
       return true;
@@ -67,8 +64,7 @@ public final class PagingParameterInterceptor implements HandlerInterceptor {
     return true;
   }
 
-  private static @NonNull List<String> invalidParameters(
-      final @NonNull HttpServletRequest request) {
+  private static List<String> invalidParameters(final HttpServletRequest request) {
 
     final var invalid = new ArrayList<String>(2);
     final var rawPage = request.getParameter(PAGE_PARAMETER);
@@ -91,7 +87,7 @@ public final class PagingParameterInterceptor implements HandlerInterceptor {
     return invalid;
   }
 
-  private static boolean takesPageable(final @NonNull HandlerMethod handlerMethod) {
+  private static boolean takesPageable(final HandlerMethod handlerMethod) {
     return Arrays.stream(handlerMethod.getMethodParameters())
         .anyMatch(parameter -> Pageable.class.isAssignableFrom(parameter.getParameterType()));
   }

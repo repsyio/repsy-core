@@ -15,7 +15,6 @@
  */
 package io.repsy.core.web_error;
 
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -27,5 +26,4 @@ import org.jspecify.annotations.Nullable;
  *     message id of the failure when no constraint is known
  * @param message A human readable description, or null
  */
-@NullMarked
 public record ProblemField(String field, String code, @Nullable String message) {}

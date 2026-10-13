@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -67,7 +67,7 @@ public class StablePagingConfig {
   static final class TieBreakerInterceptor implements MethodInterceptor {
 
     @Override
-    public Object invoke(final @NonNull MethodInvocation invocation) throws Throwable {
+    public @Nullable Object invoke(final MethodInvocation invocation) throws Throwable {
       final Method method = invocation.getMethod();
 
       if (Arrays.stream(method.getParameterTypes()).anyMatch(Pageable.class::isAssignableFrom)) {
