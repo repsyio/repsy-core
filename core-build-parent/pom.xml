@@ -45,7 +45,7 @@
     <test.jvm.args></test.jvm.args>
     <!-- Dependency Versions -->
     <!-- The version spring-core 7 depends on; declared here so the annotations are not transitive. -->
-    <jspecify.version>1.0.0</jspecify.version>
+    <jspecify.version>1.0.1</jspecify.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <spring-boot.version>4.1.1</spring-boot.version>
     <ulid-creator.version>5.2.4</ulid-creator.version>
