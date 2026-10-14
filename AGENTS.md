@@ -81,6 +81,24 @@ check) but still runs the other checks. Before considering a change done, run a 
   without `@NullMarked`.
   The root `lombok.config` sets `lombok.addLombokGeneratedAnnotation = true`, so NullAway treats
   Lombok-generated members as unannotated code (RPS-2151).
+  Consumers (RPS-2237, checked 2026-10-14 against `main` a658f0e, `-Xmaxwarns 100000`, `verify
+  -DskipTests`). A core bump turns NullAway to ERROR and the `package-info` guard on for every
+  project below the `core-parent` chain; none of them needs a change today:
+
+  | Consumer | Parent chain | Core pin | NullAway findings | `package-info` findings | How it keeps building |
+  | --- | --- | --- | --- | --- | --- |
+  | `repsy` (Repsy OS) | `core` submodule | pointer | 0 | 0 | Migrated in RPS-2151 |
+  | `repsy-mono` (Cloud) | `core-parent` | pointer | 0 | 0 | Migrated in RPS-2151 |
+  | `repsy-mono/imentis/imentis-backend` | `imentis` -> `repsy-mono` -> `core-parent` | pointer (the mono `core/` submodule) | 0 | 0 | `@NullMarked` packages (RPS-2150, RPS-2223 dropped its suppression) |
+  | `repsy-mono/ext/*` (accounting, mail, payment, support, soft-delete, logging) | `ext` -> `repsy-mono` -> `core-parent` | pointer | 0 | 0 | `@NullMarked` packages |
+  | `repsy/repsy-scanner-trivy` | Spring Boot parent, not `core-parent` | none | n/a | n/a | Carries its own Error Prone and NullAway flags (RPS-2150); a core bump changes nothing |
+
+  Every consumer vendors this repository as a submodule pointer, so a bump is a deliberate commit
+  in the consumer, not something that follows `main`. No other project builds on `core-parent` or
+  `core-build-parent` (the other `repsyio` repositories and `~/Projects` checkouts use the Spring
+  Boot parent or are not Java). Before bumping a consumer, build it against the new commit: a new
+  project that inherits `core-parent` must mark its packages `@NullMarked` and fix the findings, or
+  set `-Xep:NullAway:WARN` in its own `compilerArgs` and record it here.
 - New source files need the Apache 2.0 license header (see any existing file for the exact
   format) — the RAT plugin fails the build otherwise.
 - Follow `config/checkstyle.xml` for style rules; it's enforced at `verify`, not just advisory.
