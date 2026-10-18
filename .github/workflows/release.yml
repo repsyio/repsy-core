@@ -3,14 +3,17 @@ name: Release | Core
 on:
   workflow_dispatch:
 
-# This workflow tags; it deploys nothing (RPS-1085).
+# This workflow tags the release, deploys it to repo.repsy.io (RPS-2264) and opens the release pull
+# request.
 #
-# `main` only accepts changes through a pull request, and the workflow token is not a bypass actor
-# of the `main-branch-protection` ruleset, so this workflow never pushes to `main`. It pushes the
-# release commits to a `release/<tag>` branch and merges them with a pull request instead.
+# `main` only accepts changes through a pull request (ruleset `protect default`), and neither the
+# workflow token nor the repsy-release-bot App is a bypass actor, so this workflow never pushes to
+# `main`. It pushes the release commits to a `release/<tag>` branch and opens a pull request with
+# the App token (RPS-2268): a pull request opened with `github.token` triggers no `pull_request`
+# workflows, so its required checks would never report. The workflow does not merge it, because
+# auto-merge is off for the repository: a person merges it.
 permissions:
   contents: write
-  pull-requests: write
 
 concurrency:
   group: release
@@ -45,15 +48,34 @@ jobs:
 
       # Fail before anything is tagged or pushed: a release without credentials would otherwise
       # leave a tag and a release branch behind that have to be deleted by hand.
-      - name: Check registry credentials
+      - name: Check registry and App credentials
         env:
           REPSY_MAVEN_USERNAME: ${{ secrets.REPSY_MAVEN_USERNAME }}
           REPSY_MAVEN_TOKEN: ${{ secrets.REPSY_MAVEN_TOKEN }}
+          REPSY_BOT_APP_ID: ${{ vars.REPSY_BOT_APP_ID }}
+          REPSY_BOT_APP_PRIVATE_KEY: ${{ secrets.REPSY_BOT_APP_PRIVATE_KEY }}
         run: |
           if [ -z "$REPSY_MAVEN_USERNAME" ] || [ -z "$REPSY_MAVEN_TOKEN" ]; then
             echo "The REPSY_MAVEN_USERNAME and REPSY_MAVEN_TOKEN Actions secrets are not set" >&2
             exit 1
           fi
+          if [ -z "$REPSY_BOT_APP_ID" ] || [ -z "$REPSY_BOT_APP_PRIVATE_KEY" ]; then
+            echo "The REPSY_BOT_APP_ID variable and REPSY_BOT_APP_PRIVATE_KEY secret of the repsy-release-bot App are not available to this repository" >&2
+            exit 1
+          fi
+
+      # Minted before anything is tagged, so a missing App installation fails the run here and not
+      # after a version has been published. A token lives one hour and the job at most 30 minutes.
+      # It is limited to this repository. The pull request title check skips this App
+      # (pr-title.yml), so the pull request needs no Jira key.
+      - name: Create the GitHub App token
+        id: app
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ vars.REPSY_BOT_APP_ID }}
+          private-key: ${{ secrets.REPSY_BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
 
       # release:prepare commits the release and next development versions and creates the tag,
       # so it needs a committer identity.
@@ -108,9 +130,11 @@ jobs:
             -Dfmt.skip=true
           echo "Deployed ${TAG#v} to https://repo.repsy.io/repsy/repsy-maven" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Open and merge the release pull request
+      # Not merged here: auto-merge is off, and the App is no bypass actor of the ruleset. A person
+      # merges it once its checks are green (an organization admin may use the bypass).
+      - name: Open the release pull request
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.app.outputs.token }}
           TAG: ${{ steps.push.outputs.tag }}
           BRANCH: ${{ steps.push.outputs.branch }}
         run: |
@@ -118,8 +142,5 @@ jobs:
             --base main \
             --head "$BRANCH" \
             --title "Release ${TAG#v}" \
-            --body "Release commits made by \`release:prepare\` in the Release | Core workflow: the release version, tagged \`${TAG}\`, then the next development version. Merging this pull request moves \`main\` to the next development version.")"
-          # Auto-merge when checks still have to report, a plain merge when
-          # the pull request is already mergeable.
-          gh pr merge "$url" --auto --squash || gh pr merge "$url" --squash
-          echo "Release pull request: ${url}" >> "$GITHUB_STEP_SUMMARY"
+            --body "Release commits made by \`release:prepare\` in the Release | Core workflow: the release version, tagged \`${TAG}\` and deployed to https://repo.repsy.io/repsy/repsy-maven, then the next development version. Merging this pull request moves \`main\` to the next development version.")"
+          echo "Release pull request, to be merged by a person: ${url}" >> "$GITHUB_STEP_SUMMARY"

@@ -120,11 +120,12 @@ before you merge.
 - Merge with `gh pr merge <n> --auto --squash` (or the "Merge when ready" button) once the required
   checks pass.
 - `.github/workflows/pr-checks.yml` runs on `pull_request` only.
-- Required checks in the `main-branch-protection` ruleset: `Java Core Lib check`,
+- Required checks in the `protect default` ruleset: `Java Core Lib check`,
   `Editorconfig check - All` and `PR title` (`pr-title.yml`). Add a new job to that list when it
   should gate merges.
 - Every PR title reads `RPS-1234: Description`, or `RPS-1, RPS-2: Description` for several
-  tickets. `pr-title.yml` checks it; Dependabot PRs are exempt. The squash commit takes the title.
+  tickets. `pr-title.yml` checks it; Dependabot PRs and the PRs of the `repsy-release-bot` App
+  (RPS-2268) are exempt. The squash commit takes the title.
 - `gh pr merge --admin` skips the required checks. Org admins keep that bypass as a break-glass for
   a red `main` only. A PR merged that way is not re-verified against the other open PRs, so do not
   use it for routine merges.
@@ -145,24 +146,32 @@ before you merge.
   tag format `v@{project.version}`) via the `.github/workflows/release.yml` pipeline. Don't bump
   versions by hand as part of unrelated changes.
 - Run a release with the **Release | Core** workflow (`workflow_dispatch`, or
-  `gh workflow run release.yml`). `main` requires a pull request and the workflow token is not a
-  bypass actor of the `main-branch-protection` ruleset, so the workflow never pushes to `main`:
+  `gh workflow run release.yml`). `main` requires a pull request and neither the workflow token nor
+  the `repsy-release-bot` App is a bypass actor of the `protect default` ruleset, so the workflow
+  never pushes to `main`:
   1. `release:prepare` commits the release version and then the next development version, and
      tags the release commit `v<version>`, all locally.
   2. The workflow pushes those commits to a `release/v<version>` branch, together with the tag, and
-     opens a `Release <version>` pull request that it merges with auto-merge (squash).
-  3. Merging that pull request moves `main` to the next development version. The tag stays on the
+     deploys the tag (see below).
+  3. It opens a `Release <version>` pull request with the App token and stops. Auto-merge is off
+     for the repository and the App cannot merge, so a person merges the pull request once its
+     checks are green (an organization admin may use `gh pr merge --admin --squash`).
+  4. Merging that pull request moves `main` to the next development version. The tag stays on the
      release commit, whose parent is the `main` commit the workflow started from. The squash merge
      gives `main` a new commit, so the tagged commit is reachable through the tag, not through
      `main`'s history.
-- The workflow needs **Allow GitHub Actions to create and approve pull requests** turned on in the
-  repository's Actions settings, or `gh pr create` is refused.
-- Pull requests opened with the workflow token don't trigger `pull_request` workflows. While
-  `pr-checks.yml` checks are required, the release pull request gets no result and can't merge;
-  open it with a GitHub App token instead of `github.token` if that blocks the release.
-- If the pull request can't merge, delete the `release/v<version>` branch and the `v<version>` tag
-  (`git push origin --delete release/v<version> v<version>`) before running the workflow again;
-  `release:prepare` fails when the tag already exists.
+- The pull request is opened with a token of the `repsy-release-bot` GitHub App (RPS-2268), not
+  `github.token`: a pull request opened with `github.token` triggers no `pull_request` workflows,
+  so its required checks would never report. The App has Contents and Pull requests write, no
+  webhook, and is installed on `repsy-core`, `repsy` and `repsy-mono` only; its ID is the org
+  variable `REPSY_BOT_APP_ID` and its private key the org secret `REPSY_BOT_APP_PRIVATE_KEY`
+  (both visible to those three repositories). A first step fails the run, before anything is
+  tagged, when either is missing. Its pull requests skip the PR title check, so they need no Jira
+  key.
+- If the release pull request can't merge, delete the `release/v<version>` branch and the
+  `v<version>` tag (`git push origin --delete release/v<version> v<version>`) before running the
+  workflow again; `release:prepare` fails when the tag already exists. If the deploy has already
+  published the version, cut the next patch version instead (see below).
 - A release is a tag and a deployment (RPS-2264, which replaced the tag-only rule of RPS-1085).
   After pushing the branch and the tag, the workflow checks the tagged commit out into a separate
   worktree and runs `mvn deploy` there, which publishes every module (parents, BOMs and libraries)
