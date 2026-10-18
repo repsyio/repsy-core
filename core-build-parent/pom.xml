@@ -5,7 +5,7 @@
 
   <groupId>io.repsy.core</groupId>
   <artifactId>core-build-parent</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
 
   <!--
@@ -54,7 +54,7 @@
       configuration when it builds the model, before JaCoCo's prepare-agent has put its agent in
       it, and the coverage would be lost without any error.
     -->
-    <test.jvm.args></test.jvm.args>
+    <test.jvm.args />
     <!-- Dependency Versions -->
     <!-- The version spring-core 7 depends on; declared here so the annotations are not transitive. -->
     <jspecify.version>1.0.1</jspecify.version>
