@@ -30,7 +30,7 @@ Modules covered:
     <dependency>
       <groupId>io.repsy.core</groupId>
       <artifactId>core-bom</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.0</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
