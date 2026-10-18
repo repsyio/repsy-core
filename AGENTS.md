@@ -85,15 +85,15 @@ check) but still runs the other checks. Before considering a change done, run a 
   -DskipTests`). A core bump turns NullAway to ERROR and the `package-info` guard on for every
   project below the `core-parent` chain; none of them needs a change today:
 
-  | Consumer | Parent chain | Core pin | NullAway findings | `package-info` findings | How it keeps building |
+  | Consumer | Parent chain | Core version | NullAway findings | `package-info` findings | How it keeps building |
   | --- | --- | --- | --- | --- | --- |
-  | `repsy` (Repsy OS) | `core` submodule | pointer | 0 | 0 | Migrated in RPS-2151 |
-  | `repsy-mono` (Cloud) | `core-parent` | pointer | 0 | 0 | Migrated in RPS-2151 |
-  | `repsy-mono/imentis/imentis-backend` | `imentis` -> `repsy-mono` -> `core-parent` | pointer (the mono `core/` submodule) | 0 | 0 | `@NullMarked` packages (RPS-2150, RPS-2223 dropped its suppression) |
-  | `repsy-mono/ext/*` (accounting, mail, payment, support, soft-delete, logging) | `ext` -> `repsy-mono` -> `core-parent` | pointer | 0 | 0 | `@NullMarked` packages |
+  | `repsy` (Repsy OS) | `core-parent` | release | 0 | 0 | Migrated in RPS-2151 |
+  | `repsy-mono` (Cloud) | `core-parent` | release | 0 | 0 | Migrated in RPS-2151 |
+  | `repsy-mono/imentis/imentis-backend` | `imentis` -> `repsy-mono` -> `core-parent` | release | 0 | 0 | `@NullMarked` packages (RPS-2150, RPS-2223 dropped its suppression) |
+  | `repsy-mono/ext/*` (accounting, mail, payment, support, soft-delete, logging) | `ext` -> `repsy-mono` -> `core-parent` | release | 0 | 0 | `@NullMarked` packages |
   | `repsy/repsy-scanner-trivy` | Spring Boot parent, not `core-parent` | none | n/a | n/a | Carries its own Error Prone and NullAway flags (RPS-2150); a core bump changes nothing |
 
-  Every consumer vendors this repository as a submodule pointer, so a bump is a deliberate commit
+  Every consumer takes a released version (RPS-2265, RPS-2266), so a bump is a deliberate commit
   in the consumer, not something that follows `main`. No other project builds on `core-parent` or
   `core-build-parent` (the other `repsyio` repositories and `~/Projects` checkouts use the Spring
   Boot parent or are not Java). Before bumping a consumer, build it against the new commit: a new
@@ -129,9 +129,9 @@ before you merge.
 - `gh pr merge --admin` skips the required checks. Org admins keep that bypass as a break-glass for
   a red `main` only. A PR merged that way is not re-verified against the other open PRs, so do not
   use it for routine merges.
-- `repsy` consumes this repository as its `core/` submodule. Only bump that pointer to a commit
-  that is on this repository's `main`: a commit that only exists on a PR branch disappears from
-  the remote when the branch is deleted on merge.
+- `repsy` and `repsy-mono` consume a released version of this repository (RPS-2265, RPS-2266); they
+  never follow `main`. Bump a consumer only to a version that exists on repo.repsy.io (see
+  "Releases").
 
 ## Dependabot and code scanning
 
@@ -189,14 +189,22 @@ before you merge.
 - A published release version cannot be replaced. If the deploy step fails part-way, some modules
   may already be in the repository: delete them there (or cut the next patch version) as well as
   the `release/v<version>` branch and the `v<version>` tag before running the workflow again.
-- Until `repsy` and `repsy-mono` stop vendoring this repository (RPS-2265, RPS-2266), they still
-  build it from the `core/` submodule with `mvn install -f core/pom.xml`. The `v<version>` tag
-  names a released version; the tagged commit is not on `main`'s history, so a consumer that still
-  pins a submodule commit pins one on `main` (see "Merging to `main`"), normally the release pull
-  request's squash commit or a later one.
-- The release pull request moves `main` to the next development version, so a consumer that bumps
-  its submodule pointer past it must bump `<parent><version>` in its root `pom.xml` in the same
-  change: Maven ignores `relativePath` when the parent version does not match.
+- `repsy` and `repsy-mono` consume the release (RPS-2265, RPS-2266): the version of their parent
+  `core-parent` and, once more, `repsy-core.version` in their root `pom.xml` (the `core-bom` import),
+  resolved from the public repository through a `<repositories>` entry, which Maven reads even for
+  the parent. The `v<version>` tag names the release; the tagged commit is not on `main`'s history. A
+  bump is a deliberate change in the consumer after the release exists on repo.repsy.io (RPS-2269
+  will open it automatically). No `-SNAPSHOT` of this repository is used downstream.
+- Things a consumer must do because of how `core-parent` is published: set
+  `checkstyle.config.location` itself and keep a copy of `config/checkstyle.xml` (`core-parent` sets
+  it to the relative `../../config/checkstyle.xml` of its own layout); write its own `<version>` in
+  the root `pom.xml` (it used to inherit it from the parent); keep the two version places equal
+  (`CoreVersionPinTest` in `repsy`, a `pr-checks` step in `repsy-mono` that also compares the OS
+  submodule).
+- A `io.repsy.core:*:1.0.0` installed locally from an older checkout shadows the release (Maven
+  prefers a local release to the remote) and gives confusing errors, such as a missing
+  `spring-modulith` version. Delete `~/.m2/repository/io/repsy/core/*/1.0.0`, or build once with
+  `-Dmaven.repo.local=<empty dir>`, which is what CI sees.
 
 ## Adding a new module
 

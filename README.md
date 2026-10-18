@@ -37,7 +37,19 @@ mvn verify -DskipTests
 
 ## Using the libraries
 
-The artifacts are not published to a repository: build them from a checkout or a git submodule of this repository (`mvn install`) before a project can resolve them.
+Released versions are published to the public Maven repository `https://repo.repsy.io/repsy/repsy-maven` (no credentials needed). Declare it in the consuming project and use a release version, never a `-SNAPSHOT`. A `repositories` entry in the project's own POM is enough, also when the parent POM (`core-parent`) comes from there:
+
+```xml
+<repositories>
+  <repository>
+    <id>repsy-maven</id>
+    <url>https://repo.repsy.io/repsy/repsy-maven</url>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </repository>
+</repositories>
+```
 
 Import the BOM in a consuming Maven project to keep Repsy Core module versions aligned:
 
@@ -47,7 +59,7 @@ Import the BOM in a consuming Maven project to keep Repsy Core module versions a
     <dependency>
       <groupId>io.repsy.core</groupId>
       <artifactId>core-bom</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.0</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
