@@ -39,6 +39,18 @@ jobs:
           distribution: "temurin"
           cache: maven
 
+      # Fail before anything is tagged or pushed: a release without credentials would otherwise
+      # leave a tag and a release branch behind that have to be deleted by hand.
+      - name: Check registry credentials
+        env:
+          REPSY_MAVEN_USERNAME: ${{ secrets.REPSY_MAVEN_USERNAME }}
+          REPSY_MAVEN_TOKEN: ${{ secrets.REPSY_MAVEN_TOKEN }}
+        run: |
+          if [ -z "$REPSY_MAVEN_USERNAME" ] || [ -z "$REPSY_MAVEN_TOKEN" ]; then
+            echo "The REPSY_MAVEN_USERNAME and REPSY_MAVEN_TOKEN Actions secrets are not set" >&2
+            exit 1
+          fi
+
       # release:prepare commits the release and next development versions and creates the tag,
       # so it needs a committer identity.
       - name: Configure git identity
@@ -69,6 +81,28 @@ jobs:
             echo "tag=${tag}"
             echo "branch=${branch}"
           } >> "$GITHUB_OUTPUT"
+
+      # Deploys the tagged commit, not the checkout (which is at the next development version), from
+      # a separate worktree so release.properties and the release backups stay out of the build.
+      # The tests were skipped by release:prepare for the same reason as here: the commit on main
+      # passed them in the pull request checks. A failure here leaves the tag and the release
+      # branch behind: delete them as described in AGENTS.md before running the workflow again.
+      # The settings file comes from the workspace, not the tagged commit, which does not have it;
+      # it reads the credentials from the environment of this step.
+      - name: Deploy the release to repo.repsy.io
+        env:
+          REPSY_MAVEN_USERNAME: ${{ secrets.REPSY_MAVEN_USERNAME }}
+          REPSY_MAVEN_TOKEN: ${{ secrets.REPSY_MAVEN_TOKEN }}
+          TAG: ${{ steps.push.outputs.tag }}
+        run: |
+          git worktree add "$RUNNER_TEMP/release" "$TAG"
+          cd "$RUNNER_TEMP/release"
+          mvn -B deploy \
+            -s "$GITHUB_WORKSPACE/.github/maven-settings.xml" \
+            -Dmaven.test.skip=true \
+            -Dcheckstyle.skip=true \
+            -Dfmt.skip=true
+          echo "Deployed ${TAG#v} to https://repo.repsy.io/repsy/repsy-maven" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Open and merge the release pull request
         env:

@@ -15,6 +15,18 @@
     core-parent (kept for the applications that inherit it) joins the two.
   -->
 
+  <!--
+    Every module of the repository inherits this, so one entry covers the whole reactor. Only the
+    Release | Core workflow deploys (RPS-2264), with credentials for the server id from its Actions
+    secrets; the repository is public, so consumers resolve from it without any.
+  -->
+  <distributionManagement>
+    <repository>
+      <id>repsy-maven</id>
+      <url>https://repo.repsy.io/repsy/repsy-maven</url>
+    </repository>
+  </distributionManagement>
+
   <properties>
     <java.version>25</java.version>
     <maven.compiler.release>25</maven.compiler.release>
@@ -60,6 +72,7 @@
       for enforcer); they are pinned here as-is, not upgraded.
     -->
     <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+    <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
     <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
     <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
     <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
@@ -120,6 +133,11 @@
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${maven-deploy-plugin.version}</version>
+        </plugin>
         <!--
           Failsafe is not bound here (no module of this repository has integration tests): a
           consumer that runs *IT classes declares the plugin with its executions and inherits this

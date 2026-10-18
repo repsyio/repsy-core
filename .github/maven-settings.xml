@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Maven settings of the Release | Core workflow: the credentials of the repsy-maven server named by
+  the distributionManagement of core-build-parent. The values come from the environment of the
+  deploy step, so nothing secret is stored here.
+-->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0">
+  <servers>
+    <server>
+      <id>repsy-maven</id>
+      <username>${env.REPSY_MAVEN_USERNAME}</username>
+      <password>${env.REPSY_MAVEN_TOKEN}</password>
+    </server>
+  </servers>
+</settings>

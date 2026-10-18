@@ -163,22 +163,31 @@ before you merge.
 - If the pull request can't merge, delete the `release/v<version>` branch and the `v<version>` tag
   (`git push origin --delete release/v<version> v<version>`) before running the workflow again;
   `release:prepare` fails when the tag already exists.
-- A release is a tag, nothing more. Nothing builds or deploys the tagged version: there is no
-  `distributionManagement`, no `deploy` or `release:perform` step, and no artifact on repo.repsy.io
-  or Maven Central (decided in RPS-1085). `release:prepare` only runs `clean verify` locally to
-  check the release commit. Every consumer (`repsy`, and the private `repsy-mono`) vendors this
-  repository as a git submodule and builds it with `mvn install -f core/pom.xml`. The
-  `v<version>` tag names a released version; the tagged commit is not on `main`'s history, so a
-  consumer still pins a commit on `main` (see "Merging to `main`"), normally the release pull
+- A release is a tag and a deployment (RPS-2264, which replaced the tag-only rule of RPS-1085).
+  After pushing the branch and the tag, the workflow checks the tagged commit out into a separate
+  worktree and runs `mvn deploy` there, which publishes every module (parents, BOMs and libraries)
+  to the public `repsy-maven` repository, `https://repo.repsy.io/repsy/repsy-maven`, named by the
+  `distributionManagement` of `core-build-parent`. The credentials are the `REPSY_MAVEN_USERNAME`
+  and `REPSY_MAVEN_TOKEN` Actions secrets of this repository; a first step fails the run before
+  anything is tagged when either is missing. Consumers read the repository without credentials.
+  Maven Central stays out until a public consumer needs it (it would need POM metadata and
+  source/javadoc/signing plugins).
+- Versions follow SemVer, picked by whoever dispatches the release (the version `release:prepare`
+  asks for), and the whole reactor shares one version. A change that removes or alters a public
+  class, method or auto-configured bean is a major bump, a backwards-compatible addition is a
+  minor one, anything else a patch. Downstream builds use released versions only, never
+  `-SNAPSHOT`.
+- A published release version cannot be replaced. If the deploy step fails part-way, some modules
+  may already be in the repository: delete them there (or cut the next patch version) as well as
+  the `release/v<version>` branch and the `v<version>` tag before running the workflow again.
+- Until `repsy` and `repsy-mono` stop vendoring this repository (RPS-2265, RPS-2266), they still
+  build it from the `core/` submodule with `mvn install -f core/pom.xml`. The `v<version>` tag
+  names a released version; the tagged commit is not on `main`'s history, so a consumer that still
+  pins a submodule commit pins one on `main` (see "Merging to `main`"), normally the release pull
   request's squash commit or a later one.
 - The release pull request moves `main` to the next development version, so a consumer that bumps
   its submodule pointer past it must bump `<parent><version>` in its root `pom.xml` in the same
   change: Maven ignores `relativePath` when the parent version does not match.
-- Revisit publishing (repo.repsy.io first, Central only with a public consumer) when a consumer
-  cannot use the submodule. The prerequisites are listed in RPS-1085: a checkout-independent
-  Checkstyle config location in `core-build-parent`, POM metadata (`name`, `description`, `url`,
-  `licenses`, `developers`) and source/javadoc/signing plugins for Central, and registry
-  credentials as Actions secrets in this repository.
 
 ## Adding a new module
 
