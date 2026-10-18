@@ -64,6 +64,19 @@ jobs:
             exit 1
           fi
 
+      # Minted before anything is tagged, so a missing App installation fails the run here and not
+      # after a version has been published. A token lives one hour and the job at most 30 minutes.
+      # It is limited to this repository. The pull request title check skips this App
+      # (pr-title.yml), so the pull request needs no Jira key.
+      - name: Create the GitHub App token
+        id: app
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ vars.REPSY_BOT_APP_ID }}
+          private-key: ${{ secrets.REPSY_BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+
       # release:prepare commits the release and next development versions and creates the tag,
       # so it needs a committer identity.
       - name: Configure git identity
@@ -116,17 +129,6 @@ jobs:
             -Dcheckstyle.skip=true \
             -Dfmt.skip=true
           echo "Deployed ${TAG#v} to https://repo.repsy.io/repsy/repsy-maven" >> "$GITHUB_STEP_SUMMARY"
-
-      # Minted after the deploy (a token lives one hour) and limited to this repository. The pull
-      # request title check skips this App (pr-title.yml), so the title needs no Jira key.
-      - name: Create the GitHub App token
-        id: app
-        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
-        with:
-          app-id: ${{ vars.REPSY_BOT_APP_ID }}
-          private-key: ${{ secrets.REPSY_BOT_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
 
       # Not merged here: auto-merge is off, and the App is no bypass actor of the ruleset. A person
       # merges it once its checks are green (an organization admin may use the bypass).
