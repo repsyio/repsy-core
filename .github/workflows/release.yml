@@ -28,6 +28,10 @@ jobs:
       - name: Setup Maven Action
         uses: s4u/setup-maven-action@4a02cbd99769e46198135c31d5097c94618ba3f5 # v1.21.0
         with:
+          # The checkout above keeps its credentials for the later git push. The action's own
+          # checkout runs with persist-credentials: false and would remove them, and the push of
+          # the release branch and the tag would then fail with "could not read Username".
+          checkout-enabled: false
           # The JDK step below owns the Temurin JDK and the Maven cache.
           cache-enabled: false
           java-distribution: temurin
