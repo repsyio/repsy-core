@@ -1,0 +1,35 @@
+name: App smoke test (temporary)
+
+# Throwaway (RPS-2268): checks that the repsy-release-bot App can be used from a workflow of this repository,
+# that its pull requests start the pull_request workflows, and that the PR title check skips them. Never merged.
+on:
+  push:
+    branches:
+      - "ci/app-smoke-*"
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Create the GitHub App token
+        id: app
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ vars.REPSY_BOT_APP_ID }}
+          private-key: ${{ secrets.REPSY_BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+
+      - name: Open a throwaway pull request
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" \
+            --title "App smoke test, do not merge" \
+            --body "Opened by the repsy-release-bot App to check the release automation (RPS-2268). Closed right after.")"
+          echo "Opened ${url}" >> "$GITHUB_STEP_SUMMARY"
