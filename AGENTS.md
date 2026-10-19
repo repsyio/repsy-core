@@ -193,8 +193,10 @@ before you merge.
   `core-parent` and, once more, `repsy-core.version` in their root `pom.xml` (the `core-bom` import),
   resolved from the public repository through a `<repositories>` entry, which Maven reads even for
   the parent. The `v<version>` tag names the release; the tagged commit is not on `main`'s history. A
-  bump is a deliberate change in the consumer after the release exists on repo.repsy.io (RPS-2269
-  will open it automatically). No `-SNAPSHOT` of this repository is used downstream.
+  bump is a deliberate change in the consumer after the release exists on repo.repsy.io. The last
+  step of the release workflow sends `core-released` (the version) to `repsyio/repsy` with the App
+  token, which opens the bump pull request there and, once a person merged it, in `repsy-mono`
+  (RPS-2269); a person merges both. No `-SNAPSHOT` of this repository is used downstream.
 - Things a consumer must do because of how `core-parent` is published: set
   `checkstyle.config.location` itself and keep a copy of `config/checkstyle.xml` (`core-parent` sets
   it to the relative `../../config/checkstyle.xml` of its own layout); write its own `<version>` in

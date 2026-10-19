@@ -77,6 +77,17 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: ${{ github.event.repository.name }}
 
+      # RPS-2269: the same App, limited to repsyio/repsy, tells that repository about the release
+      # (last step). Minted here for the same reason as the token above.
+      - name: Create the GitHub App token for repsy
+        id: app-repsy
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ vars.REPSY_BOT_APP_ID }}
+          private-key: ${{ secrets.REPSY_BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: repsy
+
       # release:prepare commits the release and next development versions and creates the tag,
       # so it needs a committer identity.
       - name: Configure git identity
@@ -144,3 +155,16 @@ jobs:
             --title "Release ${TAG#v}" \
             --body "Release commits made by \`release:prepare\` in the Release | Core workflow: the release version, tagged \`${TAG}\` and deployed to https://repo.repsy.io/repsy/repsy-maven, then the next development version. Merging this pull request moves \`main\` to the next development version.")"
           echo "Release pull request, to be merged by a person: ${url}" >> "$GITHUB_STEP_SUMMARY"
+
+      # RPS-2269: repsyio/repsy opens the pull request that moves its repsy-core version to this
+      # release (core-bump.yml). A failure here leaves a published release without a bump pull
+      # request: run "Bump | repsy-core" in repsyio/repsy with the version by hand.
+      - name: Tell repsy about the release
+        env:
+          GH_TOKEN: ${{ steps.app-repsy.outputs.token }}
+          TAG: ${{ steps.push.outputs.tag }}
+        run: |
+          gh api "repos/${GITHUB_REPOSITORY_OWNER}/repsy/dispatches" \
+            -f event_type=core-released \
+            -f "client_payload[version]=${TAG#v}"
+          echo "Sent core-released ${TAG#v} to ${GITHUB_REPOSITORY_OWNER}/repsy" >> "$GITHUB_STEP_SUMMARY"
