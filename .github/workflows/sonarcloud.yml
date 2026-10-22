@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Maven Action
-        uses: s4u/setup-maven-action@4a02cbd99769e46198135c31d5097c94618ba3f5 # v1.21.0
+        uses: s4u/setup-maven-action@5d4481650d2563723ad6c5e8f009ac8fd746e3e8 # v1.22.0
         with:
           # Checkout already ran above with fetch-depth: 0 for SonarCloud blame data;
           # setup-maven-action's own default checkout would re-shallow the repo.
@@ -38,7 +38,7 @@ jobs:
           java-distribution: temurin
 
       - name: Set up JDK
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
         with:
           java-version: "25"
           distribution: "temurin"
