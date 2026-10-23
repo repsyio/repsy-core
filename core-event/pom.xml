@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.repsy.core</groupId>
     <artifactId>core-build-parent</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <relativePath>../core-build-parent/pom.xml</relativePath>
   </parent>
 
