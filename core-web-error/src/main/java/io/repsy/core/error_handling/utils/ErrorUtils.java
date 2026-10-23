@@ -32,7 +32,9 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
  * @deprecated use {@link ExceptionReport} with {@link RequestReport#of} and the trace id of the
  *     response
  */
-@Deprecated
+// Public API of a released artifact: removal is a major bump, so it stays for now.
+@SuppressWarnings("java:S1133")
+@Deprecated(since = "1.0.1")
 @UtilityClass
 public class ErrorUtils {
 

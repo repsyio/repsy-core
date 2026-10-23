@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -48,6 +49,8 @@ public final class PagingParameterInterceptor implements HandlerInterceptor {
   private static final String PAGE_PARAMETER = "page";
   private static final String SIZE_PARAMETER = "size";
 
+  // The HandlerInterceptor contract asks for a boolean; this one only ever rejects by throwing.
+  @SuppressWarnings("java:S3516")
   @Override
   public boolean preHandle(
       final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
@@ -92,7 +95,7 @@ public final class PagingParameterInterceptor implements HandlerInterceptor {
         .anyMatch(parameter -> Pageable.class.isAssignableFrom(parameter.getParameterType()));
   }
 
-  private static boolean isWithin(final String rawValue, final int min, final int max) {
+  private static boolean isWithin(final @Nullable String rawValue, final int min, final int max) {
     if (rawValue == null || rawValue.isBlank()) {
       return true;
     }
@@ -103,7 +106,7 @@ public final class PagingParameterInterceptor implements HandlerInterceptor {
       final var value = Integer.parseInt(rawValue);
 
       return value >= min && value <= max;
-    } catch (final NumberFormatException e) {
+    } catch (final NumberFormatException _) {
       return false;
     }
   }
@@ -115,7 +118,8 @@ public final class PagingParameterInterceptor implements HandlerInterceptor {
    * (page or size absent) is left to the resolver's default, as elsewhere in this class, so it
    * never reaches this check.
    */
-  private static boolean overflowsOffset(final String rawPage, final String rawSize) {
+  private static boolean overflowsOffset(
+      final @Nullable String rawPage, final @Nullable String rawSize) {
     if (rawPage == null || rawPage.isBlank() || rawSize == null || rawSize.isBlank()) {
       return false;
     }

@@ -38,8 +38,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 
 class RequestReportTest {
 
-  private static HttpServletRequest request(final Map<String, String> headers, final String query)
-      throws Exception {
+  private static HttpServletRequest request(final Map<String, String> headers, final String query) {
     final var request = mock(HttpServletRequest.class);
     when(request.getRequestURI()).thenReturn("/api/test");
     when(request.getMethod()).thenReturn("POST");

@@ -37,7 +37,9 @@ import org.springframework.data.repository.core.support.RepositoryFactoryCustomi
  * projection), so the primary key is added there.
  */
 @Configuration(proxyBeanMethods = false)
-public class StablePagingConfig {
+public final class StablePagingConfig {
+
+  private StablePagingConfig() {}
 
   /**
    * Registers the interceptor with every repository factory. Spring Data does not pick up {@link

@@ -97,9 +97,9 @@ class SortValidatorTest {
   @DisplayName("rejects a path the mapping does not list as a key, naming sort")
   void resolveRejectsUnmappedKey() {
     final var pageable = PageRequest.of(0, 10, Sort.by("maxVersion"));
+    final var mapping = Map.of("max_version", "maxVersion");
 
-    assertThatThrownBy(
-            () -> SortValidator.resolveSortPaths(pageable, Map.of("max_version", "maxVersion")))
+    assertThatThrownBy(() -> SortValidator.resolveSortPaths(pageable, mapping))
         .isInstanceOf(InvalidPagingParameterException.class)
         .extracting(e -> ((InvalidPagingParameterException) e).getParameterNames())
         .isEqualTo("sort");

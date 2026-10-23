@@ -121,7 +121,7 @@ public record RequestReport(
     };
   }
 
-  private static List<String> parameterNames(final String queryString) {
+  private static List<String> parameterNames(final @Nullable String queryString) {
 
     final var result = new ArrayList<String>();
 
