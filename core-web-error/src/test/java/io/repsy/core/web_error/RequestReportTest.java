@@ -38,8 +38,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 
 class RequestReportTest {
 
-  private static HttpServletRequest request(final Map<String, String> headers, final String query)
-      throws Exception {
+  private static HttpServletRequest request(final Map<String, String> headers, final String query) {
     final var request = mock(HttpServletRequest.class);
     when(request.getRequestURI()).thenReturn("/api/test");
     when(request.getMethod()).thenReturn("POST");
@@ -60,7 +59,7 @@ class RequestReportTest {
         "X-NuGet-ApiKey",
         "Proxy-Authorization"
       })
-  void secretHeadersAreMaskedRegardlessOfCase(final String name) throws Exception {
+  void secretHeadersAreMaskedRegardlessOfCase(final String name) {
     final var report = RequestReport.of(request(Map.of(name, "s3cret"), null), "t1").toString();
 
     assertTrue(report.contains(name + ": " + RequestReport.MASK));
@@ -68,7 +67,7 @@ class RequestReportTest {
   }
 
   @Test
-  void allowedHeadersAreKeptAndUnknownOnesMasked() throws Exception {
+  void allowedHeadersAreKeptAndUnknownOnesMasked() {
     final var report =
         RequestReport.of(
                 request(Map.of("User-Agent", "curl/8", "X-Custom-Token", "abc"), null), "t1")
@@ -94,7 +93,7 @@ class RequestReportTest {
   }
 
   @Test
-  void traceIdIsEchoedInTheReport() throws Exception {
+  void traceIdIsEchoedInTheReport() {
     final var report = RequestReport.of(request(Map.of(), null), "trace-123");
 
     assertEquals("trace-123", report.traceId());
@@ -104,7 +103,7 @@ class RequestReportTest {
   }
 
   @Test
-  void exceptionReportsDescribeTheSpecialisedExceptions() throws Exception {
+  void exceptionReportsDescribeTheSpecialisedExceptions() {
     final var report = RequestReport.of(request(Map.of(), "a=1"), "t1");
 
     final var conversion =
@@ -137,7 +136,7 @@ class RequestReportTest {
   }
 
   @Test
-  void refererUserinfoAndQueryNeverReachTheReport() throws Exception {
+  void refererUserinfoAndQueryNeverReachTheReport() {
     final var report =
         RequestReport.of(
                 request(Map.of("Referer", "https://user:pw@host/p?token=abc#frag"), null), "t1")
@@ -151,7 +150,7 @@ class RequestReportTest {
   }
 
   @Test
-  void malformedUserinfoWithAtSignDoesNotLeak() throws Exception {
+  void malformedUserinfoWithAtSignDoesNotLeak() {
     final var report =
         RequestReport.of(request(Map.of("Referer", "https://u:p@ss@host/"), null), "t1").toString();
 
@@ -160,7 +159,7 @@ class RequestReportTest {
   }
 
   @Test
-  void plainRefererStaysUseful() throws Exception {
+  void plainRefererStaysUseful() {
     final var report =
         RequestReport.of(
                 request(
@@ -199,14 +198,14 @@ class RequestReportTest {
         "https://host%2e/",
         "https://ho\r\nst/"
       })
-  void unparsableRefererFailsClosed(final String value) throws Exception {
+  void unparsableRefererFailsClosed(final String value) {
     final var report = RequestReport.of(request(Map.of("Referer", value), null), "t1").toString();
 
     assertTrue(report.contains("Referer: " + LogSanitizer.REDACTED + "\n"), value);
   }
 
   @Test
-  void oversizedAndNullOriginsAreHandled() throws Exception {
+  void oversizedAndNullOriginsAreHandled() {
     final var long1 = "https://" + "a".repeat(3000);
     final var report =
         RequestReport.of(request(Map.of("Origin", "null", "Referer", long1), null), "t1")
@@ -221,7 +220,7 @@ class RequestReportTest {
   }
 
   @Test
-  void controlCharactersInAllowedHeadersAreEscaped() throws Exception {
+  void controlCharactersInAllowedHeadersAreEscaped() {
     final var report =
         RequestReport.of(request(Map.of("User-Agent", "curl\r\nFake: line\u007f"), null), "t1")
             .toString();
@@ -231,7 +230,7 @@ class RequestReportTest {
   }
 
   @Test
-  void nonSimpleParameterNamesAreRedacted() throws Exception {
+  void nonSimpleParameterNamesAreRedacted() {
     final var report =
         RequestReport.of(
             request(

@@ -121,7 +121,7 @@ public record RequestReport(
     };
   }
 
-  private static List<String> parameterNames(final String queryString) {
+  private static List<String> parameterNames(final @Nullable String queryString) {
 
     final var result = new ArrayList<String>();
 
@@ -129,7 +129,7 @@ public record RequestReport(
       return result;
     }
 
-    for (final var pair : queryString.split("&")) {
+    for (final var pair : queryString.split("&", -1)) {
       final var name = pair.contains("=") ? pair.substring(0, pair.indexOf('=')) : pair;
 
       if (!name.isEmpty()) {

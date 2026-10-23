@@ -171,7 +171,7 @@ public class ExceptionReport {
 
   private static boolean embedsInput(final Throwable ex, final Set<Throwable> seen) {
 
-    if (ex == null || !seen.add(ex)) {
+    if (!seen.add(ex)) {
       return false;
     }
 
@@ -180,7 +180,10 @@ public class ExceptionReport {
     }
 
     final var related = new ArrayList<Throwable>(Arrays.asList(ex.getSuppressed()));
-    related.add(ex.getCause());
+
+    if (ex.getCause() != null) {
+      related.add(ex.getCause());
+    }
 
     return related.stream().anyMatch(other -> embedsInput(other, seen));
   }

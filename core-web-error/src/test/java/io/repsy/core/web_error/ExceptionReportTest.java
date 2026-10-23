@@ -58,7 +58,9 @@ class ExceptionReportTest {
   }
 
   @SuppressWarnings("unused")
-  void target(final int limit) {}
+  void target(final int limit) {
+    // Only looked up through reflection to build a MethodParameter.
+  }
 
   private static MethodParameter parameter() throws Exception {
     final Method method = ExceptionReportTest.class.getDeclaredMethod("target", int.class);
