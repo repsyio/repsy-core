@@ -30,8 +30,8 @@
     <guava.version>33.5.0-jre</guava.version>
     <java-jwt.version>4.5.0</java-jwt.version>
     <totp.version>1.7.1</totp.version>
-    <spring-cloud.version>2025.1.3</spring-cloud.version>
-    <spring-modulith.version>2.1.1</spring-modulith.version>
+    <spring-cloud.version>2025.1.4</spring-cloud.version>
+    <spring-modulith.version>2.1.2</spring-modulith.version>
     <testcontainers-bom.version>2.0.5</testcontainers-bom.version>
     <!--
       Overrides the 2.4.240 of the Spring Boot BOM (RPS-1676). The <h2.version> property alone does
