@@ -64,7 +64,7 @@
     <!-- Plugin Versions -->
     <apache-rat-plugin.version>0.18</apache-rat-plugin.version>
     <fmt-maven-plugin.version>2.29</fmt-maven-plugin.version>
-    <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.16</jacoco-maven-plugin.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
     <!--
       The next three are the versions Maven 3.9.x already resolved for these plugins when the
