@@ -90,7 +90,7 @@ check) but still runs the other checks. Before considering a change done, run a 
   | `repsy` (Repsy OS) | `core-parent` | release | 0 | 0 | Migrated in RPS-2151 |
   | `repsy-mono` (Cloud) | `core-parent` | release | 0 | 0 | Migrated in RPS-2151 |
   | `repsy-mono/imentis/imentis-backend` | `imentis` -> `repsy-mono` -> `core-parent` | release | 0 | 0 | `@NullMarked` packages (RPS-2150, RPS-2223 dropped its suppression) |
-  | `repsy-mono/ext/*` (accounting, mail, payment, support, soft-delete, logging) | `ext` -> `repsy-mono` -> `core-parent` | release | 0 | 0 | `@NullMarked` packages |
+  | `repsy-ext` (private; accounting, mail, payment, support, soft-delete, logging) | `ext` -> `core-parent` | release | 0 | 0 | `@NullMarked` packages (moved out of `repsy-mono/ext` in RPS-2378) |
   | `repsy/repsy-scanner-trivy` | Spring Boot parent, not `core-parent` | none | n/a | n/a | Carries its own Error Prone and NullAway flags (RPS-2150); a core bump changes nothing |
 
   Every consumer takes a released version (RPS-2265, RPS-2266), so a bump is a deliberate commit
@@ -163,9 +163,9 @@ before you merge.
 - The pull request is opened with a token of the `repsy-release-bot` GitHub App (RPS-2268), not
   `github.token`: a pull request opened with `github.token` triggers no `pull_request` workflows,
   so its required checks would never report. The App has Contents and Pull requests write, no
-  webhook, and is installed on `repsy-core`, `repsy` and `repsy-mono` only; its ID is the org
-  variable `REPSY_BOT_APP_ID` and its private key the org secret `REPSY_BOT_APP_PRIVATE_KEY`
-  (both visible to those three repositories). A first step fails the run, before anything is
+  webhook, and is installed on `repsy-core`, `repsy`, `repsy-mono` and `repsy-ext` only; its ID is
+  the org variable `REPSY_BOT_APP_ID` and its private key the org secret
+  `REPSY_BOT_APP_PRIVATE_KEY` (both visible to those four repositories). A first step fails the run, before anything is
   tagged, when either is missing. Its pull requests skip the PR title check, so they need no Jira
   key.
 - If the release pull request can't merge, delete the `release/v<version>` branch and the
