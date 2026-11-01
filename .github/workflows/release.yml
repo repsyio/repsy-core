@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   release:
-    runs-on: ubicloud-standard-4
+    runs-on: repsy-md
     timeout-minutes: 30
 
     steps:
