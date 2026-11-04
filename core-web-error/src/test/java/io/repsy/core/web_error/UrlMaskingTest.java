@@ -156,8 +156,8 @@ class UrlMaskingTest {
         UrlMasking.mask("failed\r\n2026-01-01 ERROR forged\u2028line https://h/x\ty\u0000z");
 
     assertThat(masked)
-        .isEqualTo("failed\\r\\n2026-01-01 ERROR forged\\u2028line https://h/...\\ty\\u0000z");
-    assertThat(masked).doesNotContain("\r", "\n", "\t", "\u0000", "\u2028");
+        .isEqualTo("failed\\r\\n2026-01-01 ERROR forged\\u2028line https://h/...\\ty\\u0000z")
+        .doesNotContain("\r", "\n", "\t", "\u0000", "\u2028");
   }
 
   @ParameterizedTest
