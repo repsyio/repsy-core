@@ -130,28 +130,35 @@ public class UrlMasking {
   /** Decodes {@code %HH} sequences that stand for an ASCII character, leaves any other as is. */
   private static String decodeAsciiPercent(final String value) {
     final var out = new StringBuilder(value.length());
-    final int length = value.length();
+    int i = 0;
 
-    for (int i = 0; i < length; i++) {
-      final char c = value.charAt(i);
+    while (i < value.length()) {
+      final int decoded = asciiPercentAt(value, i);
 
-      if (c == '%'
-          && i + 2 < length
-          && isHexDigit(value.charAt(i + 1))
-          && isHexDigit(value.charAt(i + 2))) {
-        final int decoded = Integer.parseInt(value.substring(i + 1, i + 3), 16);
-
-        if (decoded < 0x80) {
-          out.append((char) decoded);
-          i += 2;
-          continue;
-        }
+      if (decoded >= 0) {
+        out.append((char) decoded);
+        i += 3;
+      } else {
+        out.append(value.charAt(i));
+        i++;
       }
-
-      out.append(c);
     }
 
     return out.toString();
+  }
+
+  /** The ASCII character the {@code %HH} sequence at {@code index} stands for, or -1 if none. */
+  private static int asciiPercentAt(final String value, final int index) {
+    if (value.charAt(index) != '%'
+        || index + 2 >= value.length()
+        || !isHexDigit(value.charAt(index + 1))
+        || !isHexDigit(value.charAt(index + 2))) {
+      return -1;
+    }
+
+    final int decoded = Integer.parseInt(value.substring(index + 1, index + 3), 16);
+
+    return decoded < 0x80 ? decoded : -1;
   }
 
   /**
@@ -164,74 +171,100 @@ public class UrlMasking {
     }
 
     final var out = new StringBuilder(text.length());
-    final int length = text.length();
     int copied = 0;
     int from = 0;
+    int sep = text.indexOf(SEPARATOR, from);
 
-    while (true) {
-      final int sep = text.indexOf(SEPARATOR, from);
-
-      if (sep < 0) {
-        break;
-      }
-
-      int scheme = sep;
-      while (scheme > copied && isSchemeChar(text.charAt(scheme - 1))) {
-        scheme--;
-      }
-      while (scheme < sep && !isAsciiLetter(text.charAt(scheme))) {
-        scheme++;
-      }
-
-      if (scheme == sep) {
-        from = sep + SEPARATOR.length();
-        continue;
-      }
-
-      final int start = sep + SEPARATOR.length();
-      final int end = regionEnd(text, start, length);
-
-      // The authority starts after the LAST '@' anywhere in the region, whatever character (space,
-      // '#', '/', '?', a quote) precedes it: parsers disagree where the userinfo ends.
-      int at = -1;
-      for (int i = end - 1; i >= start; i--) {
-        if (text.charAt(i) == '@') {
-          at = i;
-          break;
-        }
-      }
-
-      final int authority = at >= 0 ? at + 1 : start;
-
-      int hostEnd = authority;
-      while (hostEnd < end && !isAuthorityDelimiter(text.charAt(hostEnd))) {
-        hostEnd++;
-      }
-
-      int tokenEnd = hostEnd;
-      while (tokenEnd < end && !isTokenEnd(text.charAt(tokenEnd))) {
-        tokenEnd++;
-      }
-
-      out.append(text, copied, sep).append(SEPARATOR);
-
-      if (isHostAndPort(text, authority, hostEnd)) {
-        out.append(text, authority, hostEnd);
+    while (sep >= 0) {
+      if (hasScheme(text, copied, sep)) {
+        copied = appendMaskedUrl(out, text, copied, sep);
+        from = copied;
       } else {
-        out.append(REDACTED);
+        from = sep + SEPARATOR.length();
       }
 
-      if (at >= 0 || tokenEnd > hostEnd) {
-        out.append(CUT);
-      }
-
-      copied = tokenEnd;
-      from = tokenEnd;
+      sep = text.indexOf(SEPARATOR, from);
     }
 
-    out.append(text, copied, length);
+    out.append(text, copied, text.length());
 
     return out.toString();
+  }
+
+  /**
+   * Whether the characters before the separator at {@code sep}, from {@code copied} on, end in a
+   * scheme.
+   */
+  private static boolean hasScheme(final String text, final int copied, final int sep) {
+    boolean letter = false;
+
+    for (int i = sep - 1; i >= copied && isSchemeChar(text.charAt(i)); i--) {
+      letter |= isAsciiLetter(text.charAt(i));
+    }
+
+    return letter;
+  }
+
+  /**
+   * Appends the text up to the URL whose separator is at {@code sep}, then the masked URL, and
+   * returns where the URL token ends.
+   */
+  private static int appendMaskedUrl(
+      final StringBuilder out, final String text, final int copied, final int sep) {
+    final int start = sep + SEPARATOR.length();
+    final int end = regionEnd(text, start, text.length());
+
+    // The authority starts after the LAST '@' anywhere in the region, whatever character (space,
+    // '#', '/', '?', a quote) precedes it: parsers disagree where the userinfo ends.
+    final int at = lastAtSign(text, start, end);
+    final int authority = at >= 0 ? at + 1 : start;
+    final int hostEnd = firstAuthorityDelimiter(text, authority, end);
+    final int tokenEnd = firstTokenEnd(text, hostEnd, end);
+
+    out.append(text, copied, sep).append(SEPARATOR);
+
+    if (isHostAndPort(text, authority, hostEnd)) {
+      out.append(text, authority, hostEnd);
+    } else {
+      out.append(REDACTED);
+    }
+
+    if (at >= 0 || tokenEnd > hostEnd) {
+      out.append(CUT);
+    }
+
+    return tokenEnd;
+  }
+
+  /** The index of the last '@' in {@code [start, end)}, or -1; never scans outside the region. */
+  private static int lastAtSign(final String text, final int start, final int end) {
+    int i = end - 1;
+
+    while (i >= start && text.charAt(i) != '@') {
+      i--;
+    }
+
+    return i >= start ? i : -1;
+  }
+
+  private static int firstAuthorityDelimiter(final String text, final int from, final int end) {
+    int i = from;
+
+    while (i < end && !isAuthorityDelimiter(text.charAt(i))) {
+      i++;
+    }
+
+    return i;
+  }
+
+  private static int firstTokenEnd(final String text, final int from, final int end) {
+    int i = from;
+
+    while (i < end && !isTokenEnd(text.charAt(i))) {
+      i++;
+    }
+
+    return i;
   }
 
   /**
@@ -269,44 +302,52 @@ public class UrlMasking {
       return false;
     }
 
-    int hostEnd = to;
-    int i = from;
+    final int hostEnd =
+        text.charAt(from) == '[' ? ipv6LiteralEnd(text, from, to) : dnsNameEnd(text, from, to);
 
-    if (text.charAt(i) == '[') {
-      final int close = text.indexOf(']', i);
+    return hostEnd >= 0 && isOptionalPort(text, hostEnd, to);
+  }
 
-      if (close < 0 || close >= to || close == i + 1) {
-        return false;
-      }
+  /**
+   * The index after the bracketed IPv6 literal starting at {@code from}, or -1 if it is not one.
+   */
+  private static int ipv6LiteralEnd(final String text, final int from, final int to) {
+    final int close = text.indexOf(']', from);
 
-      for (int j = i + 1; j < close; j++) {
-        final char c = text.charAt(j);
+    if (close < 0 || close >= to || close == from + 1) {
+      return -1;
+    }
 
-        if (!(isHexDigit(c) || c == ':' || c == '.')) {
-          return false;
-        }
-      }
+    for (int j = from + 1; j < close; j++) {
+      final char c = text.charAt(j);
 
-      hostEnd = close + 1;
-      i = to;
-    } else {
-      while (i < to && text.charAt(i) != ':') {
-        final char c = text.charAt(i);
-
-        if (!(isAsciiLetter(c) || isDigit(c) || c == '.' || c == '-' || c == '_')) {
-          return false;
-        }
-
-        i++;
-      }
-
-      hostEnd = i;
-
-      if (hostEnd == from) {
-        return false;
+      if (!(isHexDigit(c) || c == ':' || c == '.')) {
+        return -1;
       }
     }
 
+    return close + 1;
+  }
+
+  /** The index after the DNS name or IPv4 address starting at {@code from}, or -1 if none. */
+  private static int dnsNameEnd(final String text, final int from, final int to) {
+    int i = from;
+
+    while (i < to && text.charAt(i) != ':') {
+      final char c = text.charAt(i);
+
+      if (!(isAsciiLetter(c) || isDigit(c) || c == '.' || c == '-' || c == '_')) {
+        return -1;
+      }
+
+      i++;
+    }
+
+    return i == from ? -1 : i;
+  }
+
+  /** Whether {@code hostEnd} is the end, or is followed only by {@code :port}. */
+  private static boolean isOptionalPort(final String text, final int hostEnd, final int to) {
     if (hostEnd == to) {
       return true;
     }
