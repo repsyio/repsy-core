@@ -119,6 +119,70 @@ class UrlMaskingTest {
         "https://user:" + SECRET + "/x");
   }
 
+  // RPS-2421: a "scheme" that does not start with a letter is not a URL for the scan, so it must
+  // not end the region of the URL before it either; the text after it can still be that URL's
+  // userinfo for a lenient parser.
+  static Stream<String> schemeMustStartWithALetter() {
+    return Stream.of(
+        "https://host/ok 1://user:" + SECRET + "@h2/p",
+        "https://u:" + SECRET + "@host/x 9://a:" + SECRET + "@h2",
+        "https://host/ok +x://user:" + SECRET + "@h2/p",
+        "https://host/ok .-://" + SECRET + "@h2/p");
+  }
+
+  @ParameterizedTest
+  @MethodSource("schemeMustStartWithALetter")
+  void aSeparatorWithoutALetterSchemeDoesNotLetTheRemainderEscape(final String input) {
+    assertThat(UrlMasking.mask(input)).doesNotContain("s3cr3t");
+  }
+
+  // RPS-2421: tokens that still look like URL content after the end of the URL token (an unencoded
+  // space in the path, a quote closing before the query) belong to the URL as far as the secret is
+  // concerned.
+  static Stream<String> urlContentAfterATokenBoundary() {
+    return Stream.of(
+        "https://host/a b?token=" + SECRET,
+        "https://host/a ?token=" + SECRET,
+        "https://host/a #" + SECRET,
+        "https://host/a =" + SECRET,
+        "https://host/a /token/" + SECRET,
+        "\"https://host/a\"?token=" + SECRET,
+        "\"https://host/a\" ?token=" + SECRET + "&x=1");
+  }
+
+  @ParameterizedTest
+  @MethodSource("urlContentAfterATokenBoundary")
+  void urlContentAfterATokenBoundaryIsDropped(final String input) {
+    assertThat(UrlMasking.mask(input)).doesNotContain("s3cr3t");
+  }
+
+  @Test
+  void proseAfterAUrlIsKept() {
+    assertThat(UrlMasking.mask("GET https://host/x?k=" + SECRET + " returned 404 Not Found: retry"))
+        .isEqualTo("GET https://host/... returned 404 Not Found: retry");
+    assertThat(UrlMasking.maskUrls("https://host/x\n/etc/hosts"))
+        .isEqualTo("https://host/...\n/etc/hosts");
+  }
+
+  // RPS-2421: an '@' that follows a '/', '?', '#', '\\' or a token end is not proof of an authority
+  // (the URL may be a path or query that merely contains an '@'), so what follows it is not
+  // kept as the host.
+  static Stream<String> atSignInThePathQueryOrFragment() {
+    return Stream.of(
+        "https://host/path@" + SECRET,
+        "https://host/token@" + SECRET + ".example.com",
+        "https://host/p?x=a@" + SECRET + ".com",
+        "https://host/p#a@" + SECRET + ".com",
+        "https://host\\a@" + SECRET + ".com/x",
+        "https://host/a b@" + SECRET + ".com");
+  }
+
+  @ParameterizedTest
+  @MethodSource("atSignInThePathQueryOrFragment")
+  void anAtSignAfterADelimiterDoesNotMakeWhatFollowsTheHost(final String input) {
+    assertThat(UrlMasking.mask(input)).doesNotContain("s3cr3t").contains("https://<redacted>");
+  }
+
   @ParameterizedTest
   @NullAndEmptySource
   void nullAndEmptyAreKept(final String input) {

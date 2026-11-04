@@ -30,7 +30,12 @@ import org.jspecify.annotations.Nullable;
  * kept that precedes the last {@code @} of the URL, and a URL is reduced to {@code
  * scheme://host[:port]}, followed by {@code /...} when a path, query or fragment was cut. An
  * authority that is not a plain host (and port) becomes {@code scheme://<redacted>}. A path with an
- * {@code @} in it (an npm scope) is shortened too, which is fine for a log.
+ * {@code @} in it (an npm scope) is shortened too, which is fine for a log. An {@code @} behind a
+ * {@code /}, {@code ?}, {@code #}, backslash or a space is not trusted as the end of the userinfo
+ * either: the authority is then {@code <redacted>}. The tokens that follow the URL and look like
+ * URL content ({@code /}, {@code ?}, {@code #}, {@code =}, {@code &}, {@code %}, {@code @}) are
+ * dropped with it; a plain word between them ends that, since prose cannot be told from a path with
+ * a space in it.
  *
  * <p>Every control character of the result is replaced by a visible escape so that an exception
  * message cannot forge log lines. The scan is linear in the length of the text.
@@ -196,13 +201,27 @@ public class UrlMasking {
    * scheme.
    */
   private static boolean hasScheme(final String text, final int copied, final int sep) {
-    boolean letter = false;
+    return schemeStart(text, copied, sep) >= 0;
+  }
 
-    for (int i = sep - 1; i >= copied && isSchemeChar(text.charAt(i)); i--) {
-      letter |= isAsciiLetter(text.charAt(i));
+  /**
+   * The index where the scheme that ends at the separator {@code sep} starts, or -1 if there is
+   * none. A scheme starts with an ASCII letter ({@code 1://} and {@code +://} are not schemes). The
+   * main loop and {@link #regionEnd} must agree on this, or the text after a separator that one of
+   * them skips would be copied as it is while the other considers it part of a URL.
+   */
+  private static int schemeStart(final String text, final int lowerBound, final int sep) {
+    int start = sep;
+
+    while (start > lowerBound && isSchemeChar(text.charAt(start - 1))) {
+      start--;
     }
 
-    return letter;
+    while (start < sep && !isAsciiLetter(text.charAt(start))) {
+      start++;
+    }
+
+    return start < sep ? start : -1;
   }
 
   /**
@@ -220,20 +239,68 @@ public class UrlMasking {
     final int authority = at >= 0 ? at + 1 : start;
     final int hostEnd = firstAuthorityDelimiter(text, authority, end);
     final int tokenEnd = firstTokenEnd(text, hostEnd, end);
+    final int urlEnd = skipUrlContent(text, tokenEnd, end);
 
     out.append(text, copied, sep).append(SEPARATOR);
 
-    if (isHostAndPort(text, authority, hostEnd)) {
+    // An '@' behind a delimiter ('/', '?', '#', a space...) may be in the path or the query, not
+    // in the authority: what follows it is then not known to be the host.
+    if (isHostAndPort(text, authority, hostEnd)
+        && !hasDelimiter(text, start, Math.max(at, start))) {
       out.append(text, authority, hostEnd);
     } else {
       out.append(REDACTED);
     }
 
-    if (at >= 0 || tokenEnd > hostEnd) {
+    if (at >= 0 || urlEnd > hostEnd) {
       out.append(CUT);
     }
 
-    return tokenEnd;
+    return urlEnd;
+  }
+
+  /**
+   * The end of what still belongs to the URL after its token ended: the following tokens that look
+   * like URL content ({@code /}, {@code ?}, {@code #}, {@code =}, {@code &}, {@code %}, {@code @},
+   * {@code \}), because an unencoded space in the path or a quote closing before the query does not
+   * end the URL for every client. A token without such a character, or a line break, ends it, so
+   * the prose after a URL is kept.
+   */
+  private static int skipUrlContent(final String text, final int from, final int end) {
+    int kept = from;
+    int i = from;
+
+    while (i < end) {
+      while (i < end && isContinuationGap(text.charAt(i))) {
+        i++;
+      }
+
+      boolean urlContent = false;
+
+      while (i < end && !Character.isWhitespace(text.charAt(i)) && text.charAt(i) >= 0x20) {
+        urlContent |= isUrlContent(text.charAt(i));
+        i++;
+      }
+
+      if (!urlContent) {
+        return kept;
+      }
+
+      kept = i;
+    }
+
+    return kept;
+  }
+
+  /** Whether any character in {@code [from, to)} ends the authority. */
+  private static boolean hasDelimiter(final String text, final int from, final int to) {
+    for (int i = from; i < to; i++) {
+      if (isAuthorityDelimiter(text.charAt(i))) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /** The index of the last '@' in {@code [start, end)}, or -1; never scans outside the region. */
@@ -275,13 +342,11 @@ public class UrlMasking {
   private static int regionEnd(final String text, final int start, final int length) {
     for (int i = start; i < length; i++) {
       if (text.charAt(i) == ':' && text.startsWith(SEPARATOR, i)) {
-        int s = i;
+        final int scheme = schemeStart(text, start, i);
 
-        while (s > start && isSchemeChar(text.charAt(s - 1))) {
-          s--;
+        if (scheme >= 0) {
+          return scheme;
         }
-
-        return s;
       }
     }
 
@@ -290,6 +355,15 @@ public class UrlMasking {
 
   private static boolean isTokenEnd(final char c) {
     return c == '"' || c == '\'' || c == '<' || c == '>' || Character.isWhitespace(c) || c < 0x20;
+  }
+
+  private static boolean isContinuationGap(final char c) {
+    return c == ' ' || c == '\t' || c == '"' || c == '\'' || c == '<' || c == '>';
+  }
+
+  private static boolean isUrlContent(final char c) {
+    return c == '/' || c == '?' || c == '#' || c == '=' || c == '&' || c == '%' || c == '@'
+        || c == '\\';
   }
 
   private static boolean isAuthorityDelimiter(final char c) {
