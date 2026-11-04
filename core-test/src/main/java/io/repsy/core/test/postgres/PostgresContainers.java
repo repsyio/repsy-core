@@ -57,8 +57,10 @@ public final class PostgresContainers {
       final String username,
       final String password,
       final String... settings) {
+    // The container lives as long as the test JVM and Testcontainers' Ryuk reaper removes it at
+    // exit: it is handed to the caller, so it is not closed here.
     final var container =
-        new PostgreSQLContainer(IMAGE)
+        new PostgreSQLContainer(IMAGE) // NOSONAR java:S2095
             .withDatabaseName(database)
             .withUsername(username)
             .withPassword(password)
@@ -82,7 +84,9 @@ public final class PostgresContainers {
             DriverManager.getConnection(
                 container.getJdbcUrl(), container.getUsername(), container.getPassword());
         final var statement = connection.createStatement()) {
-      statement.execute("CREATE DATABASE " + name);
+      // An identifier cannot be a bind parameter; the name is "it_" and 32 hex digits of a random
+      // UUID, never input.
+      statement.execute("CREATE DATABASE " + name); // NOSONAR java:S2077
     } catch (final SQLException e) {
       throw new IllegalStateException("Could not create the database " + name, e);
     }
