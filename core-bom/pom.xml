@@ -67,6 +67,12 @@
         <artifactId>core-uuidv7</artifactId>
         <version>${project.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>io.repsy.core</groupId>
+        <artifactId>core-test</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 </project>
