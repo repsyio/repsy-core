@@ -34,8 +34,8 @@ import org.jspecify.annotations.Nullable;
  * {@code /}, {@code ?}, {@code #}, backslash or a space is not trusted as the end of the userinfo
  * either: the authority is then {@code <redacted>}. The tokens that follow the URL and look like
  * URL content ({@code /}, {@code ?}, {@code #}, {@code =}, {@code &}, {@code %}, {@code @}) are
- * dropped with it, plain words in between included, up to the end of the line: prose cannot be told
- * from a path with a space in it.
+ * dropped with it, up to the end of the line, plain words included: prose cannot be told from the
+ * rest of a URL with a space in it.
  *
  * <p>Every control character of the result is replaced by a visible escape so that an exception
  * message cannot forge log lines. The scan is linear in the length of the text.
@@ -260,15 +260,14 @@ public class UrlMasking {
   }
 
   /**
-   * The end of what still belongs to the URL after its token ended: everything up to the last token
-   * on the same line that looks like URL content ({@code /}, {@code ?}, {@code #}, {@code =},
-   * {@code &}, {@code %}, {@code @}, {@code \}), plain words in between included. An unencoded
-   * space in the path or a quote closing before the query does not end the URL for every client,
-   * and prose cannot be told from a path with a space in it, so this fails closed. A line break
-   * ends it, and so does a line without such a token, so the prose after a URL is kept.
+   * The end of what still belongs to the URL after its token ended: once a following token on the
+   * same line looks like URL content ({@code /}, {@code ?}, {@code #}, {@code =}, {@code &}, {@code
+   * %}, {@code @}, {@code \}), the rest of the line. An unencoded space in the path or the query,
+   * or a quote closing before the query, does not end the URL for every client, and prose cannot be
+   * told from the rest of such a URL, so this fails closed. A line break, or a line without such a
+   * token, ends the scan and the prose after the URL is kept.
    */
   private static int skipUrlContent(final String text, final int from, final int end) {
-    int kept = from;
     int i = from;
 
     while (i < end) {
@@ -277,7 +276,7 @@ public class UrlMasking {
       }
 
       if (i >= end || isLineBreak(text.charAt(i))) {
-        break;
+        return from;
       }
 
       boolean urlContent = false;
@@ -288,11 +287,22 @@ public class UrlMasking {
       }
 
       if (urlContent) {
-        kept = i;
+        return lineEnd(text, i, end);
       }
     }
 
-    return kept;
+    return from;
+  }
+
+  /** The index of the first line break in {@code [from, end)}, or {@code end}. */
+  private static int lineEnd(final String text, final int from, final int end) {
+    int i = from;
+
+    while (i < end && !isLineBreak(text.charAt(i))) {
+      i++;
+    }
+
+    return i;
   }
 
   /** Whether any character in {@code [from, to)} ends the authority. */
@@ -367,11 +377,14 @@ public class UrlMasking {
 
   /** Every kind of white space and control character, so no Unicode space hides a token. */
   private static boolean isSpace(final char c) {
-    return Character.isWhitespace(c) || Character.isSpaceChar(c) || c < 0x20 || c == 0x7f;
+    return Character.isWhitespace(c)
+        || Character.isSpaceChar(c)
+        || c < 0x20
+        || (c >= 0x7f && c <= 0x9f);
   }
 
   private static boolean isLineBreak(final char c) {
-    return c == '\n' || c == '\r' || c == 0x85 || c == 0x2028 || c == 0x2029;
+    return c == '\n' || c == '\r';
   }
 
   private static boolean isUrlContent(final char c) {

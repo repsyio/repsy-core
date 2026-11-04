@@ -146,6 +146,11 @@ class UrlMaskingTest {
         "https://host/a #" + SECRET,
         "https://host/a =" + SECRET,
         "https://host/a b c/d#" + SECRET,
+        "https://host/a ?token=x " + SECRET,
+        "https://host/a ?token=x\u007f" + SECRET,
+        "https://host/a ?token=x\u0085" + SECRET,
+        "https://host/a ?token=x\u2028" + SECRET,
+        "https://host/a ?token=abc " + SECRET + " ghi",
         "https://host/a  b  ?token=" + SECRET,
         "https://host/a\u000b?token=" + SECRET,
         "https://host/a\f?token=" + SECRET,
@@ -170,8 +175,9 @@ class UrlMaskingTest {
         .isEqualTo("GET https://host/... returned 404 Not Found: retry");
     assertThat(UrlMasking.maskUrls("https://host/x\n/etc/hosts"))
         .isEqualTo("https://host/...\n/etc/hosts");
-    assertThat(UrlMasking.maskUrls("https://host/x?k=" + SECRET + " b\u2028?t=x"))
-        .isEqualTo("https://host/... b\u2028?t=x");
+    assertThat(
+            UrlMasking.maskUrls("https://host/x see /var/log/app.log after 3 retries\nnext line"))
+        .isEqualTo("https://host/...\nnext line");
   }
 
   // RPS-2421: an '@' that follows a '/', '?', '#', '\\' or a token end is not proof of an authority
