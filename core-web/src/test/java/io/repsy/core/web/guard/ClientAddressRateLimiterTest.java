@@ -141,4 +141,12 @@ class ClientAddressRateLimiterTest {
     assertThat(ClientAddressRateLimiter.clientKey("not an address")).isEqualTo("not an address");
     assertThat(ClientAddressRateLimiter.clientKey("example.com:80")).isEqualTo("example.com:80");
   }
+
+  @Test
+  void keysAMalformedIpv6LiteralAsTheRawStringWithoutALookup() {
+    assertThat(ClientAddressRateLimiter.clientKey("1:2:3")).isEqualTo("1:2:3");
+    assertThat(ClientAddressRateLimiter.clientKey("abcd:ef::g")).isEqualTo("abcd:ef::g");
+    assertThat(ClientAddressRateLimiter.clientKey("2001:db8::1%eth0"))
+        .isEqualTo("20010db800000000::/64");
+  }
 }

@@ -85,8 +85,12 @@ public class ClientAddressRateLimiter {
    * @param clientAddress the address of the caller
    * @throws TooManyRequestsException when the caller is over the limit
    */
-  public synchronized void check(final String clientAddress) {
-    final var key = clientKey(clientAddress);
+  public void check(final String clientAddress) {
+    // Outside the lock: parsing must never hold up the other callers.
+    this.count(clientKey(clientAddress));
+  }
+
+  private synchronized void count(final String key) {
     final var now = this.clock.millis();
     var window = this.windows.get(key);
 
@@ -109,7 +113,8 @@ public class ClientAddressRateLimiter {
 
   /**
    * The key of an address: IPv4 as is, IPv6 as its /64 prefix, IPv4-mapped IPv6 as the IPv4
-   * address, anything unparsable as the raw string. Literal parsing only, no name lookup.
+   * address, anything unparsable as the raw string. Literal parsing only: no name lookup, whatever
+   * the text.
    */
   static String clientKey(final String address) {
     final var zoneAt = address.indexOf('%');
@@ -120,7 +125,10 @@ public class ClientAddressRateLimiter {
     }
 
     try {
-      return keyOf(InetAddress.getByName(literal));
+      // In brackets the JDK reads the text as an IPv6 literal only and throws when it is not one.
+      // Without them it would fall back to a DNS lookup for a malformed value that starts with a
+      // hex digit (for example "1:2:3"), and the address comes from the request.
+      return keyOf(InetAddress.getByName("[" + literal + "]"));
     } catch (final UnknownHostException e) {
       return address;
     }
