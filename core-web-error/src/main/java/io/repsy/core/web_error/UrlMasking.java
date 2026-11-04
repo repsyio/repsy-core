@@ -34,8 +34,8 @@ import org.jspecify.annotations.Nullable;
  * {@code /}, {@code ?}, {@code #}, backslash or a space is not trusted as the end of the userinfo
  * either: the authority is then {@code <redacted>}. The tokens that follow the URL and look like
  * URL content ({@code /}, {@code ?}, {@code #}, {@code =}, {@code &}, {@code %}, {@code @}) are
- * dropped with it; a plain word between them ends that, since prose cannot be told from a path with
- * a space in it.
+ * dropped with it, plain words in between included, up to the end of the line: prose cannot be told
+ * from a path with a space in it.
  *
  * <p>Every control character of the result is replaced by a visible escape so that an exception
  * message cannot forge log lines. The scan is linear in the length of the text.
@@ -260,11 +260,12 @@ public class UrlMasking {
   }
 
   /**
-   * The end of what still belongs to the URL after its token ended: the following tokens that look
-   * like URL content ({@code /}, {@code ?}, {@code #}, {@code =}, {@code &}, {@code %}, {@code @},
-   * {@code \}), because an unencoded space in the path or a quote closing before the query does not
-   * end the URL for every client. A token without such a character, or a line break, ends it, so
-   * the prose after a URL is kept.
+   * The end of what still belongs to the URL after its token ended: everything up to the last token
+   * on the same line that looks like URL content ({@code /}, {@code ?}, {@code #}, {@code =},
+   * {@code &}, {@code %}, {@code @}, {@code \}), plain words in between included. An unencoded
+   * space in the path or a quote closing before the query does not end the URL for every client,
+   * and prose cannot be told from a path with a space in it, so this fails closed. A line break
+   * ends it, and so does a line without such a token, so the prose after a URL is kept.
    */
   private static int skipUrlContent(final String text, final int from, final int end) {
     int kept = from;
@@ -275,18 +276,20 @@ public class UrlMasking {
         i++;
       }
 
+      if (i >= end || isLineBreak(text.charAt(i))) {
+        break;
+      }
+
       boolean urlContent = false;
 
-      while (i < end && !Character.isWhitespace(text.charAt(i)) && text.charAt(i) >= 0x20) {
+      while (i < end && !isSpace(text.charAt(i))) {
         urlContent |= isUrlContent(text.charAt(i));
         i++;
       }
 
-      if (!urlContent) {
-        return kept;
+      if (urlContent) {
+        kept = i;
       }
-
-      kept = i;
     }
 
     return kept;
@@ -357,8 +360,18 @@ public class UrlMasking {
     return c == '"' || c == '\'' || c == '<' || c == '>' || Character.isWhitespace(c) || c < 0x20;
   }
 
+  /** What separates tokens on a line: any space or control character, and the URL delimiters. */
   private static boolean isContinuationGap(final char c) {
-    return c == ' ' || c == '\t' || c == '"' || c == '\'' || c == '<' || c == '>';
+    return (isSpace(c) && !isLineBreak(c)) || c == '"' || c == '\'' || c == '<' || c == '>';
+  }
+
+  /** Every kind of white space and control character, so no Unicode space hides a token. */
+  private static boolean isSpace(final char c) {
+    return Character.isWhitespace(c) || Character.isSpaceChar(c) || c < 0x20 || c == 0x7f;
+  }
+
+  private static boolean isLineBreak(final char c) {
+    return c == '\n' || c == '\r' || c == 0x85 || c == 0x2028 || c == 0x2029;
   }
 
   private static boolean isUrlContent(final char c) {
