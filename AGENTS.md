@@ -24,6 +24,7 @@ own `README.md` for details on what it does.
 | `core-response` | REST response envelope and factory |
 | `core-ulid` | ULID entity-id generation/conversion (Hibernate) |
 | `core-uuidv7` | UUIDv7 entity-id generation (Hibernate) |
+| `core-test` | Test support for consumers (test scope only): `PostgresContainers` (the `postgres:18` Testcontainer of an IT JVM) and `LogLeakRecorder` (no request value in a log event) |
 
 `core-build-parent` is the Maven parent of every library module. The root `core` aggregator's
 parent is `core-parent` (the chain `core-parent` -> `core-dependencies` -> `core-build-parent`),
