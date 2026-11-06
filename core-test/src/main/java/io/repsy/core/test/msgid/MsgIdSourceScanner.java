@@ -146,11 +146,11 @@ public final class MsgIdSourceScanner {
 
     sources.forEach(
         (file, source) -> {
-          for (final var pattern : msgIdPatterns) {
+          for (final var pattern : this.msgIdPatterns) {
             collect(pattern, source, file, constants, used, unresolved);
           }
 
-          findNonIdentifierMsgIds(source)
+          this.findNonIdentifierMsgIds(source)
               .forEach(
                   text -> nonIdentifiers.computeIfAbsent(text, key -> new TreeSet<>()).add(file));
         });
@@ -167,7 +167,7 @@ public final class MsgIdSourceScanner {
    */
   public List<String> findNonIdentifierMsgIds(final String source) {
     final var found = new ArrayList<String>();
-    final Matcher matcher = nonIdentifierPattern.matcher(source);
+    final Matcher matcher = this.nonIdentifierPattern.matcher(source);
 
     while (matcher.find()) {
       final var call = matcher.group("call");
