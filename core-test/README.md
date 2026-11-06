@@ -21,8 +21,17 @@ imported BOM.
   `@RegisterExtension final LogLeakRecorder log = LogLeakRecorder.watching(MyAdvice.class);`
   (RPS-2174).
 
-The msgId scans of the products (`MessageKeysTest`, `MessageIdsCoverageTest`) are not here: they
-read each product's own source tree and bundle.
+- **`MsgIdSourceScanner`** (`io.repsy.core.test.msgid`, RPS-2516): the regular expressions, source
+  walk and constant resolution behind the msgId scans of OS `MessageKeysTest`, Cloud
+  `MessageIdsCoverageTest` and Imentis `MessageKeysTest`. `MsgIdSourceScanner.builder().build()`
+  recognises the literal or `UPPER_SNAKE` constant that is the first argument of
+  `success`/`warning`/`error` on a response factory and of a msgId-carrying exception;
+  `exceptionPrefixes`, `responseReceivers` and `extraPattern` (a pattern ending in
+  `LITERAL_OR_CONSTANT`, or declaring the named groups `literal`/`constant`) adapt it. `findSourceRoots`
+  and `readSources` read the sources, `collectConstants` and `scan` return the used ids, the
+  unresolved constants and the free-text or built exception ids. The product test keeps what is
+  its own: the source directories, the bundle, the pending lists and every assertion, so a change to
+  a pattern here shows up as a changed result there instead of a looser guard.
 
 ## Dependencies
 
