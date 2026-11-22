@@ -58,13 +58,15 @@ class RequestGuardInterceptorTest {
     guard.preHandle(post(1), response, new Object());
     guard.preHandle(post(1), response, new Object());
 
-    assertThatThrownBy(() -> guard.preHandle(post(1), response, new Object()))
+    final var third = post(1);
+    assertThatThrownBy(() -> guard.preHandle(third, response, new Object()))
         .isInstanceOf(TooManyRequestsException.class);
   }
 
   @Test
   void refusesADeclaredBodyAboveTheCap() {
-    assertThatThrownBy(() -> guard.preHandle(post(MAX_PAYLOAD + 1), response, new Object()))
+    final var oversized = post(MAX_PAYLOAD + 1);
+    assertThatThrownBy(() -> guard.preHandle(oversized, response, new Object()))
         .isInstanceOf(PayloadTooLargeException.class)
         .hasMessage("Payload too large");
   }

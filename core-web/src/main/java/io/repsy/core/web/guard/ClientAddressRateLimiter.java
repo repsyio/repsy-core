@@ -129,7 +129,7 @@ public class ClientAddressRateLimiter {
       // Without them it would fall back to a DNS lookup for a malformed value that starts with a
       // hex digit (for example "1:2:3"), and the address comes from the request.
       return keyOf(InetAddress.getByName("[" + literal + "]"));
-    } catch (final UnknownHostException e) {
+    } catch (final UnknownHostException _) {
       return address;
     }
   }

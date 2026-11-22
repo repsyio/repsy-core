@@ -44,6 +44,8 @@ public class RequestGuardInterceptor implements HandlerInterceptor {
     this.maxPayloadBytes = maxPayloadBytes;
   }
 
+  // The HandlerInterceptor contract needs a boolean; this guard only ever refuses by throwing.
+  @SuppressWarnings("java:S3516")
   @Override
   public boolean preHandle(
       final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
