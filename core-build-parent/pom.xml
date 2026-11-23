@@ -59,7 +59,7 @@
     <!-- The version spring-core 7 depends on; declared here so the annotations are not transitive. -->
     <jspecify.version>1.0.1</jspecify.version>
     <mapstruct.version>1.6.3</mapstruct.version>
-    <spring-boot.version>4.1.2</spring-boot.version>
+    <spring-boot.version>4.2.0</spring-boot.version>
     <ulid-creator.version>5.2.4</ulid-creator.version>
     <!-- Plugin Versions -->
     <apache-rat-plugin.version>0.18</apache-rat-plugin.version>
@@ -81,7 +81,7 @@
     <spotbugs-maven-plugin.version>4.10.5.0</spotbugs-maven-plugin.version>
     <!-- Plugin Dependency Versions -->
     <checkstyle.version>14.4.0</checkstyle.version>
-    <error-prone.version>2.52.0</error-prone.version>
+    <error-prone.version>2.53.0</error-prone.version>
     <nullaway.version>0.14.4</nullaway.version>
     <spotbugs.version>4.10.5</spotbugs.version>
   </properties>
